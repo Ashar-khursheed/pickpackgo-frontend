@@ -154,7 +154,7 @@
 
 @media only screen and (max-width: 767px) {
   .global-container {
-    @apply max-w-[1440px] mx-auto px-[15px];
+    @apply max-w-[1440px] mx-auto px-[30px];
   }
 
   .responsive-text {

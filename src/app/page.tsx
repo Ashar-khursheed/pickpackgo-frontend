@@ -9,14 +9,21 @@ import {
   AIICon,
   AirPlane,
   BotA,
+  EasyTools,
+  FastPayouts,
+  FreeCheck,
   RewardIcon,
   RightIcon,
   RightIconGreen,
 } from "@/utils/icon";
-import { destinations, vacationRentals } from "@/utils/mock-data";
+import { destinations, testimonials, vacationRentals } from "@/utils/mock-data";
 import Image from "next/image";
 import BackgroundShasow from "@/assets/home/Background+Shadow.png";
+import SectionBG from "@/assets/home/Section.png";
 import panelimg from "@/assets/home/panelimg.png";
+import BeautifullAppartment from "@/assets/home/Beautiful rental apartment.png";
+import TestimonialCard from "@/components/testimonials-card";
+import MobileBG from "@/assets/home/mobileBG.png";
 export default function Home() {
   return (
     <>
@@ -25,7 +32,12 @@ export default function Home() {
           <Image
             src={Container}
             alt="PikPakGo Logo"
-            className="w-full h-auto"
+            className="w-full md:h-auto md:block hidden"
+          />
+          <Image
+            src={MobileBG}
+            alt="PikPakGo Logo"
+            className="w-full h-[100vh]  md:hidden block"
           />
 
           <div className="absolute inset-0 bg-black opacity-30"></div>
@@ -33,9 +45,9 @@ export default function Home() {
         <div className="absolute top-0 left-0 w-full h-full">
           <Header />
           <div className="global-container">
-            <div className="relative z-10 flex h-[80vh] items-center justify-center w-full">
-              <div>
-                <h1 className="text-white font-bold text-6xl text-center">
+            <div className="relative z-10 flex h-[100vh] items-center justify-center w-full">
+              <div className="md:w-auto w-full">
+                <h1 className="text-white font-bold md:text-6xl text-2xl text-center">
                   Hotels, Rentals & Experiences.{" "}
                   <span className="block text-[#DBEAFE]"> In One Place.</span>
                 </h1>
@@ -48,7 +60,7 @@ export default function Home() {
                   <SearchBar />
                 </div>
 
-                <div className="flex items-center justify-center gap-2.5 text-white border border-white/30 rounded-full p-2 w-[470px] mx-auto backdrop-blur-md bg-white/10">
+                <div className="flex items-center justify-center gap-2.5 text-white border text-[12px] border-white/30 rounded-full p-2 md:w-[470px] w-full mx-auto backdrop-blur-md bg-white/10">
                   <AIICon />
                   Use AI Trip Planner <RightIcon /> Get personalized itineraries
                 </div>
@@ -343,6 +355,99 @@ export default function Home() {
                 className="w-full h-auto "
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="  relative text-white">
+        <div className="relative">
+          <Image src={SectionBG} alt="SectionBG" className="w-full h-auto" />
+        </div>
+        <div className="absolute top-0 flex flex-col items-centers justify-center w-full h-full">
+          <div className="global-container relative ">
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4 items-center justify-between ">
+              <div>
+                <div>
+                  <h2 className=" md:text-7xl text-xl font-bold">
+                    List Your Property.
+                    <span className="block">No Hidden Fees.</span>
+                  </h2>
+                  <p className="text-[#CBD5E1] md:text-xl text-base font-light mt-4 py-4">
+                    Join thousands of hosts earning more with PikPakGo. We make
+                    <span className="blosck">
+                      {" "}
+                      hosting simple, secure, and profitable.
+                    </span>
+                  </p>
+                </div>
+
+                <div className="flex gap-3.5 mt-5">
+                  <div>
+                    <FreeCheck />
+                    <h4 className="md:text-base text-sm font-bold pt-3">
+                      Free Signup
+                    </h4>
+                    <p className="text-[#CBD5E1] pt-1.5">
+                      No credit card required.
+                    </p>
+                  </div>
+                  <div>
+                    <EasyTools />
+                    <h4 className="md:text-base text-sm font-bold pt-3">
+                      Free Signup
+                    </h4>
+                    <p className="text-[#CBD5E1] pt-1.5">
+                      No credit card required.
+                    </p>
+                  </div>
+                  <div>
+                    <FastPayouts />
+                    <h4 className="md:text-base text-sm font-bold pt-3">
+                      Free Signup
+                    </h4>
+                    <p className="text-[#CBD5E1] pt-1.5">
+                      No credit card required.
+                    </p>
+                  </div>
+                </div>
+
+                <Button className="mt-10 bg-[#F97316] hover:bg-[#F97316] cursor-pointer text-white md:text-lg  hover:text-white text-base font-medium px-10 py-6 rounded-sm hover:shadow-xl transition-all duration-300">
+                  Get Started
+                </Button>
+              </div>
+              <div>
+                <Image
+                  src={BeautifullAppartment}
+                  alt="Beautiful rental apartment"
+                  className="w-full h-auto mt-10"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-28 bg-[#F8FAFC] relative">
+        <div className="global-container relative">
+          <div className="grid  grid-cols-1  items-center justify-between">
+            <div>
+              <h3 className="text-3xl font-bold text-center">
+                Loved by Travelers & Agencies
+              </h3>
+            </div>
+          </div>
+          <div className="grid  md:grid-cols-4 grid-cols-1 gap-4  items-center justify-between">
+            {testimonials.map((testimonial) => (
+              <div className="mt-10">
+                <TestimonialCard
+                  rating={testimonial.rating}
+                  testimonial={testimonial.testimonial}
+                  name={testimonial.name}
+                  title={testimonial.title}
+                  image={testimonial.image}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
