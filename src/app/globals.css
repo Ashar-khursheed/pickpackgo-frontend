@@ -126,7 +126,9 @@
 
 /* Responsive Media Queries */
 /* Arshad Khan */
-@media only screen and (min-width: 1920px) {
+
+
+/* @media only screen and (min-width: 1920px) {
   .global-container {
     @apply max-w-[1740px] mx-auto px-6;
   }
@@ -171,4 +173,89 @@
     @apply text-sm; 
   }
 }
+ */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+.global-container {
+  @apply max-w-[1440px] mx-auto px-[50px]; 
+}
+
+/* Responsive Media Queries */
+/* Arshad Khan */
+@media only screen and (min-width: 1920px) {
+  .global-container {
+    @apply max-w-[1820px] mx-auto px-6;
+  }
+
+  .responsive-text {
+    @apply text-[17px]; 
+  }
+}
+
+@media only screen and (max-width: 1580px) {
+  .global-container {
+    @apply max-w-[1480px] mx-auto px-[40px];
+  }
+
+  .responsive-text {
+    @apply text-[14px]; 
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .responsive-text {
+    @apply text-lg; 
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .global-container {
+    @apply max-w-[1440px] mx-auto px-[15px];
+  }
+
+  .responsive-text {
+    @apply text-base; 
+  }
+}
+
+@media only screen and (max-width: 340px) {
+  .global-container {
+    @apply px-4;
+  }
+
+  .responsive-text {
+    @apply text-sm; 
+  }
+}

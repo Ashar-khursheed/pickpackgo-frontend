@@ -16,7 +16,7 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
   isTopRated = false,
 }) => {
   return (
-    <div className="group relative w-full max-w-md h-[600px] rounded-3xl overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-shadow duration-300">
+    <div className="group relative w-full max-w-md 2xl:h-[600px] md:h-[400px] h-[250px] rounded-3xl overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-shadow duration-300">
       {/* Background Image with Zoom Effect */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
@@ -37,13 +37,13 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
           </div>
         )} */}
         <div className={`${isTopRated ? "self-start" : "invisible"}`}>
-          <span className="inline-block px-4 py-2 bg-orange-500 text-white text-sm font-semibold rounded-full uppercase tracking-wide">
+          <span className="inline-block 2xl:px-4 2xl:py-2 px-3 py-1 bg-orange-500 text-white text-[10px] 2xl:text-sm font-semibold rounded-full uppercase tracking-wide">
             Top Rated
           </span>
         </div>
         {/* Bottom Content */}
         <div className="space-y-3">
-          <h2 className="text-white text-4xl font-bold tracking-tight">
+          <h2 className="text-white 2xl:text-4xl md:text-2xl text-lg font-bold tracking-tight">
             {city}, {country}
           </h2>
 

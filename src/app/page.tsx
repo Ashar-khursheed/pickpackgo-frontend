@@ -24,6 +24,8 @@ import panelimg from "@/assets/home/panelimg.png";
 import BeautifullAppartment from "@/assets/home/Beautiful rental apartment.png";
 import TestimonialCard from "@/components/testimonials-card";
 import MobileBG from "@/assets/home/mobileBG.png";
+import BGOne from "@/assets/home/Background+Shadow (1).png";
+import Imag1 from "@/assets/home/Section (1) Main.png";
 export default function Home() {
   return (
     <>
@@ -92,7 +94,7 @@ export default function Home() {
           </div>
 
           <div className="mt-7">
-            <div className="grid md:grid-cols-4 grid-cols-1 gap-6 items-center justify-between">
+            <div className="grid 2xl:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-6 items-center justify-between">
               {destinations?.map((destination, index) => {
                 return (
                   <div>
@@ -120,58 +122,58 @@ export default function Home() {
 
             <div>
               <div className="grid md:grid-cols-4 grid-cols-1 gap-8 items-center justify-between mt-10">
-                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-14 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
+                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-7 2xl:py-14 md:py-10 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
                   <div>
                     <AirPlane />
                   </div>
-                  <h3 className="text-[##0F172A] font-semibold md:text-2xl text-xl">
+                  <h3 className="text-[##0F172A] font-semibold 2xl:text-2xl md:text-xl text-base">
                     Booking
                   </h3>
 
-                  <p className="text-[#64748B] md:text-lg text-base font-light mt-2">
+                  <p className="text-[#64748B] 2xl:text-lg md:text-base text-sm font-light mt-2">
                     Best prices on global flights
                   </p>
                 </div>
-                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-14 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
+                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-7 2xl:py-14 md:py-10 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
                   <div>
                     <AirPlane />
                   </div>
-                  <h3 className="text-[##0F172A] font-semibold md:text-2xl text-xl">
+                  <h3 className="text-[##0F172A] font-semibold 2xl:text-2xl md:text-xl text-base">
                     Hotels & Stays
                   </h3>
 
-                  <p className="text-[#64748B] md:text-lg text-base font-light mt-2">
+                  <p className="text-[#64748B] 2xl:text-lg md:text-base text-sm font-light mt-2">
                     Luxury to budget accommodations
                   </p>
                 </div>
-                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-14 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
+                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-7 2xl:py-14 md:py-10 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
                   <div>
                     <AirPlane />
                   </div>
-                  <h3 className="text-[##0F172A] font-semibold md:text-2xl text-xl">
+                  <h3 className="text-[##0F172A] font-semibold 2xl:text-2xl md:text-xl text-base">
                     Car Rentals
                   </h3>
 
-                  <p className="text-[#64748B] md:text-lg text-base font-light mt-2">
+                  <p className="text-[#64748B] 2xl:text-lg md:text-base text-sm font-light mt-2">
                     Flexible pickup & drop-off
                   </p>
                 </div>
-                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-14 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
+                <div className="bg-[#F1F5F9] rounded-2xl shadow-lgs px-6 py-7 2xl:py-14 md:py-10 text-center hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center gap-3">
                   <div>
                     <AirPlane />
                   </div>
-                  <h3 className="text-[##0F172A] font-semibold md:text-2xl text-xl">
+                  <h3 className="text-[##0F172A] font-semibold 2xl:text-2xl md:text-xl text-base">
                     Experiences
                   </h3>
 
-                  <p className="text-[#64748B] md:text-lg text-base font-light mt-2">
+                  <p className="text-[#64748B] 2xl:text-lg md:text-base text-sm font-light mt-2">
                     Tours, events & activities
                   </p>
                 </div>
               </div>
             </div>
 
-            <div>
+            <div className="text-center">
               <Button className="mt-10 bg-white hover:bg-green-700 cursor-pointer text-black md:text-lg border border-[#CBD5E1] hover:text-white text-base font-medium px-10 py-6 rounded-md hover:shadow-xl transition-all duration-300">
                 View All Services
               </Button>
@@ -195,7 +197,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8">
-            <div className="grid md:grid-cols-4 grid-cols-1 gap-8 items-center justify-between">
+            <div className="grid 2xl:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-8 items-center justify-between">
               {vacationRentals?.map((vacationRental, index) => {
                 return (
                   <div>
@@ -221,7 +223,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="py-20 bg-[#fff] relative">
+      <section className="py-20 bg-[#fff] md:block hidden">
         <div className="global-container relative">
           <div className="relative">
             <Image
@@ -230,7 +232,7 @@ export default function Home() {
               className="w-full h-auto"
             />
           </div>
-          <div className="absolute top-0 flex flex-col items-centers justify-center w-full h-full pl-30">
+          <div className="absolute top-0 flex flex-col items-centers justify-center h-full pl-30">
             <div className="flex gap-2.5 items-center">
               <BotA />
               <h2 className="text-white font-light md:text-lg text-base">
@@ -238,14 +240,14 @@ export default function Home() {
               </h2>
             </div>
 
-            <div className="py-3.5 pt-12">
-              <h2 className="md:text-6xl text-xl text-white font-bold">
+            <div className="py-3.5 2xl:pt-12 md:pt-7">
+              <h2 className="2xl:text-6xl md:text-3xl text-lg  text-white font-bold">
                 Let AI plan your next trip in
                 <span className="block">seconds.</span>
               </h2>
             </div>
             <div className="py-3.5">
-              <p className="text-[#DBEAFE] md:text-xl text-base font-light">
+              <p className="text-[#DBEAFE] 2xl:text-xl md:text-base text-sm font-light">
                 Tell us where you want to go and what you love — we’ll build
                 <span className="block">
                   your stay and activities automatically.
@@ -253,8 +255,8 @@ export default function Home() {
               </p>
             </div>
             <div className="py-3.5">
-              <Button className="group bg-white hover:bg-white cursor-pointer text-[#16A34A] md:text-lg border border-[#CBD5E1] hover:text-[#16A34A] text-base font-medium h-[55px] rounded-md hover:shadow-xl transition-all duration-300">
-                <span className="flex items-center gap-2.5 px-[30px]">
+              <Button className="group bg-white hover:bg-white cursor-pointer text-[#16A34A] md:text-lg border border-[#CBD5E1] hover:text-[#16A34A] text-base font-medium h-[55px] rounded-md hover:shadow-xl transition-all duration-300 p-0">
+                <span className="flex items-center gap-2.5 2xl:px-[30px] px-[20px]">
                   <span>Launch AI Trip Planner</span>
                   <RightIconGreen />
                 </span>
@@ -263,7 +265,12 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="py-20 bg-[#fff] relative">
+      <section className="py-20w bg-[#fff] md:hidden block">
+        <div className="global-container">
+          <Image src={BGOne} alt="BGOne" className=" md:hidden block" />
+        </div>
+      </section>
+      <section className="md:py-20 pb-10 bg-[#fff] relative">
         <div className="global-container relative">
           <div className="grid grid-cols-1 justify-center items-center text-center">
             <h2 className="text-[#0F172A] md:text-3xl text-xl font-bold">
@@ -274,8 +281,8 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-5 grid-cols-2 gap-8 mt-10 items-center justify-between">
-            <div></div>
+          <div className="grid 2xl::grid-cols-5 md:grid-cols-3 grid-cols-1 gap-8 mt-10 items-center justify-between">
+            <div className="2xl:block hidden"></div>
             <div className="bg-[#FFEDD5] p-5 py-12 flex flex-col items-center justify-between gap-3.5 rounded-2xl">
               <RewardIcon color="#EA580C" />
               <h5 className="text-[#9A3412] md:text-xl text-base font-bold">
@@ -312,7 +319,7 @@ export default function Home() {
                 Cash back on every eligible booking
               </p>
             </div>
-            <div></div>
+            <div className="2xl:block hidden"></div>
           </div>
           <div className="grid place-items-center">
             <Button className="mt-10 bg-white hover:bg-green-700 cursor-pointer text-black md:text-lg border border-[#CBD5E1] hover:text-white text-base font-medium px-10 py-6 rounded-md hover:shadow-xl transition-all duration-300">
@@ -330,25 +337,25 @@ export default function Home() {
                   For Professionals
                 </span>
               </div>
-              <h2 className="text-[#0F172A] md:text-5xl text-xl font-bold py-5">
+              <h2 className="text-[#0F172A] 2xl:text-5xl md:text-3xl  text-xl font-bold py-5">
                 Travel Agencies &
                 <span className="block">Corporate Partners</span>
               </h2>
-              <p className="text-[#475569] md:text-xl text-base font-light mt-4">
+              <p className="text-[#475569] 2xl:text-xl md:text-base text-sm font-light mt-4">
                 Use PikPakGo’s inventory under your own brand. Access our white-
-                <span className="block">
+                <span className="2xl:block">
                   label portal to manage bookings, markups, and commissions in
                   one
                 </span>
-                <span className="block">dashboard.</span>
+                <span className="2xl:block">dashboard.</span>
               </p>
               <div className="pt-8">
-                <Button className="group bg-[#16A34A] hover:bg-white cursor-pointer text-[#fff] md:text-lg border border-[#16A34A] hover:text-[#16A34A] text-base font-medium h-[55px] rounded-md hover:shadow-xl transition-all duration-300">
+                <Button className="group bg-[#16A34A] hover:bg-white cursor-pointer text-[#fff] 2xl:text-lg md:text-base text-sm border border-[#16A34A] hover:text-[#16A34A] text-base font-medium h-[55px] rounded-md hover:shadow-xl transition-all duration-300">
                   Learn about White-Label Access
                 </Button>
               </div>
             </div>
-            <div>
+            <div className="md:mt-0 mt-5">
               <Image
                 src={panelimg}
                 alt="Corporate Travel"
@@ -359,7 +366,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="  relative text-white">
+      <section className="relative text-white md:block hidden">
         <div className="relative">
           <Image src={SectionBG} alt="SectionBG" className="w-full h-auto" />
         </div>
@@ -368,7 +375,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 grid-cols-1 gap-4 items-center justify-between ">
               <div>
                 <div>
-                  <h2 className=" md:text-7xl text-xl font-bold">
+                  <h2 className=" 2xl:text-7xl md:text-4xl text-xl font-bold">
                     List Your Property.
                     <span className="block">No Hidden Fees.</span>
                   </h2>
@@ -425,6 +432,14 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
+      <section className="relative text-white md:hidden block">
+          <div className="global-container relative ">
+              <div className="relative">
+          <Image src={Imag1} alt="SectionBG" className="w-full h-auto rounded-md" />
+        </div>
+          </div>
+   
       </section>
 
       <section className="py-28 bg-[#F8FAFC] relative">

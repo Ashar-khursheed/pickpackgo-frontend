@@ -52,7 +52,7 @@ const VacationCard: React.FC<VacationCardProps> = ({
       {/* Content */}
       <div className="p-4 ">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
+          <h3 className="2xl:text-xl md:text-base text-sm font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
             {title}
           </h3>
           <div className="flex items-baseline ml-4 flex-shrink-0">

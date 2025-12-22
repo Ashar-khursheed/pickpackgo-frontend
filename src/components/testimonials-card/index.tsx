@@ -24,7 +24,7 @@ export default function TestimonialCard({
         {[...Array(5)].map((_, index) => (
           <Star
             key={index}
-            className={`w-8 h-8 ${
+            className={`2xl:w-8 2xl:h-8 md:w-5 md:h-5 ${
               index < rating
                 ? 'fill-yellow-400 text-yellow-400'
                 : 'fill-gray-200 text-gray-200'
@@ -35,7 +35,7 @@ export default function TestimonialCard({
 
       {/* Testimonial Text */}
       <blockquote className="mb-8">
-        <p className="text-gray-700 text-lg md:text-xl leading-relaxed italic">
+        <p className="text-gray-700 md:text-base 2xl:text-xl text-sm leading-relaxed italic">
           "{testimonial}"
         </p>
       </blockquote>
@@ -47,11 +47,11 @@ export default function TestimonialCard({
             src={image}
             alt={name}
             // fill
-            className="object-cover w-14 h-14 rounded-full"
+            className="object-cover 2xl:w-14 2xl:h-14 md:w-10 md:h-10 h-5 w-5 rounded-full"
           />
         {/* </div> */}
         <div>
-          <h4 className="text-gray-900 font-semibold text-lg">{name}</h4>
+          <h4 className="text-gray-900 font-semibold 2xl:text-lg md:text-base text-sm">{name}</h4>
           <p className="text-gray-500 text-sm">{title}</p>
         </div>
       </div>
