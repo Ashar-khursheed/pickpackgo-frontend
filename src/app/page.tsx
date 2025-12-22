@@ -446,7 +446,7 @@ export default function Home() {
         <div className="global-container relative">
           <div className="grid  grid-cols-1  items-center justify-between">
             <div>
-              <h3 className="text-3xl font-bold text-center">
+              <h3 className="text-3xl font-bold text-center ">
                 Loved by Travelers & Agencies
               </h3>
             </div>
