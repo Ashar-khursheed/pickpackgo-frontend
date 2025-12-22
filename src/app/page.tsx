@@ -24,8 +24,8 @@ import panelimg from "@/assets/home/panelimg.png";
 import BeautifullAppartment from "@/assets/home/Beautiful rental apartment.png";
 import TestimonialCard from "@/components/testimonials-card";
 import MobileBG from "@/assets/home/mobileBG.png";
-import BGOne from "@/assets/home/Background+Shadow (1).png";
-import Imag1 from "@/assets/home/Section (1) Main.png";
+import BGOne from "@/assets/home/Background+Shadow.svg";
+import Imag1 from "@/assets/home/Section.svg";
 export default function Home() {
   return (
     <>
