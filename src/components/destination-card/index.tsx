@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 interface DestinationCardProps {
@@ -6,6 +7,7 @@ interface DestinationCardProps {
   country: string;
   propertyCount: number;
   isTopRated?: boolean;
+  id: number;
 }
 
 const DestinationCard: React.FC<DestinationCardProps> = ({
@@ -14,8 +16,11 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
   country,
   propertyCount,
   isTopRated = false,
+  id
 }) => {
   return (
+   <>
+   <Link href={`/booking`} passHref>
     <div className="group relative w-full max-w-md 2xl:h-[600px] md:h-[400px] h-[250px] rounded-3xl overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-shadow duration-300">
       {/* Background Image with Zoom Effect */}
       <div
@@ -55,6 +60,8 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
         </div>
       </div>
     </div>
+    </Link> 
+    </>
   );
 };
 

@@ -29,7 +29,7 @@ import Imag1 from "@/assets/home/Section.svg";
 export default function Home() {
   return (
     <>
-      <main className="relative w-full min-h-screen overflow-hidden">
+      <main className="relative w-full min-h-screen ">
         <div className="relative">
           <Image
             src={Container}
@@ -70,7 +70,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main>
+      
 
       <section className="py-20 bg-white">
         <div className="global-container">
@@ -104,6 +104,7 @@ export default function Home() {
                       country={destination.country}
                       propertyCount={destination.propertyCount}
                       isTopRated={destination.isTopRated}
+                      id={1}
                     />
                   </div>
                 );
@@ -466,6 +467,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </main>
     </>
   );
 }
