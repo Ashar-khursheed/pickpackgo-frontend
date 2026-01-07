@@ -283,7 +283,7 @@ export default function Home() {
           </div>
 
           <div className="grid 2xl::grid-cols-5 md:grid-cols-3 grid-cols-1 gap-8 mt-10 items-center justify-between">
-            <div className="2xl:block hidden"></div>
+            <div className="md:hidden block"></div>
             <div className="bg-[#FFEDD5] p-5 py-12 flex flex-col items-center justify-between gap-3.5 rounded-2xl">
               <RewardIcon color="#EA580C" />
               <h5 className="text-[#9A3412] md:text-xl text-base font-bold">
