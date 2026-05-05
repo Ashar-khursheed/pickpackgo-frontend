@@ -2,20 +2,32 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Eye, 
-  EyeOff, 
-  Mail, 
-  Lock, 
-  User, 
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
   Phone,
   ArrowRight,
+  ArrowLeft,
+  MapPin,
+  Building2,
+  Hash,
+  Globe,
+  FileText,
+  Briefcase,
 } from 'lucide-react';
+
+import { notify } from '@/utils';
+import makeApiRequest, { setAuthToken } from '@/network-request/axios';
+import { apiurl } from '@/network-request/apis';
 
 interface ModalAuthFormProps {
   mode: 'login' | 'signup';
@@ -23,278 +35,657 @@ interface ModalAuthFormProps {
   onToggleMode?: () => void;
 }
 
+type ProfileType = 'customer' | 'agency' | null;
+
+const signupValidationSchema = Yup.object({
+  first_name: Yup.string()
+    .min(2, 'Min 2 characters')
+    .max(50, 'Max 50 characters')
+    .required('First name is required')
+    .matches(/^[a-zA-Z\s]+$/, 'Letters only'),
+
+  last_name: Yup.string()
+    .min(2, 'Min 2 characters')
+    .max(50, 'Max 50 characters')
+    .required('Last name is required')
+    .matches(/^[a-zA-Z\s]+$/, 'Letters only'),
+
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required')
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Enter a valid email address'
+    ),
+
+  phone: Yup.string()
+    .required('Phone number is required')
+    .matches(/^\+?[1-9]\d{1,14}$/, 'Enter a valid phone with country code (e.g. +1234567890)'),
+
+  country: Yup.string()
+    .required('Country is required')
+    .min(2, 'Min 2 characters'),
+
+  password: Yup.string()
+    .min(8, 'Min 8 characters')
+    .max(50, 'Max 50 characters')
+    .required('Password is required')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Must have uppercase, lowercase, and a number'
+    ),
+
+  password_confirmation: Yup.string()
+    .required('Please confirm your password')
+    .oneOf([Yup.ref('password')], 'Passwords must match'),
+
+  agreeToTerms: Yup.boolean()
+    .oneOf([true], 'You must accept the terms and conditions')
+    .required('You must accept the terms and conditions'),
+
+  _profileType: Yup.string(),
+
+  agency_name: Yup.string().when('_profileType', {
+    is: 'agency',
+    then: (schema) => schema.required('Agency name is required').min(2, 'Min 2 characters'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  tax_id: Yup.string().when('_profileType', {
+    is: 'agency',
+    then: (schema) => schema.required('Tax ID is required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  website: Yup.string().when('_profileType', {
+    is: 'agency',
+    then: (schema) =>
+      schema
+        .url('Enter a valid URL (e.g. https://example.com)')
+        .required('Website is required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  business_name: Yup.string().when('_profileType', {
+    is: 'agency',
+    then: (schema) => schema.required('Business name is required').min(2, 'Min 2 characters'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  business_registration_number: Yup.string().when('_profileType', {
+    is: 'agency',
+    then: (schema) => schema.required('Business registration number is required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  bio: Yup.string().when('_profileType', {
+    is: 'agency',
+    then: (schema) => schema.required('Bio is required').min(10, 'Min 10 characters').max(500, 'Max 500 characters'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+});
+
+const loginValidationSchema = Yup.object({
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+  password: Yup.string().required('Password is required'),
+});
+
 export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [profileType, setProfileType] = useState<ProfileType>(null);
 
-  // Form states
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    rememberMe: false,
-    agreeToTerms: false,
+  const signupFormik = useFormik({
+    initialValues: {
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      country: '',
+      password: '',
+      password_confirmation: '',
+      agreeToTerms: false,
+      _profileType: '',
+      agency_name: '',
+      tax_id: '',
+      website: '',
+      business_name: '',
+      business_registration_number: '',
+      bio: '',
+    },
+    validationSchema: signupValidationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const payload: Record<string, any> = {
+          first_name: values.first_name.trim(),
+          last_name: values.last_name.trim(),
+          email: values.email.trim().toLowerCase(),
+          phone: values.phone.trim(),
+          country: values.country.trim(),
+          password: values.password,
+          password_confirmation: values.password_confirmation,
+          user_type: 'customer',
+        };
+
+        if (profileType === 'agency') {
+          payload.agency_profile = {
+            agency_name: values.agency_name.trim(),
+            tax_id: values.tax_id.trim(),
+            website: values.website.trim(),
+          };
+          payload.host_profile = {
+            business_name: values.business_name.trim(),
+            business_registration_number: values.business_registration_number.trim(),
+            bio: values.bio.trim(),
+          };
+        }
+
+        const response = await makeApiRequest(apiurl.register, {
+          method: 'POST',
+          data: payload,
+        });
+
+        if (response?.token) {
+          notify({ message: 'Registration successful!', type: 'success' });
+          if (onSuccess) onSuccess();
+        } else if (response?.message) {
+          notify({ message: response.message, type: 'success' });
+        }
+      } catch (error: any) {
+        console.error('Registration error:', error);
+        if (error.response?.data?.errors) {
+          const errors = error.response.data.errors;
+          Object.keys(errors).forEach((key) => {
+            notify({ message: errors[key][0], type: 'error' });
+          });
+        }
+      } finally {
+        setSubmitting(false);
+      }
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    console.log('Form submitted:', formData);
-    setIsLoading(false);
-    
-    if (onSuccess) {
-      onSuccess();
-    }
+  const loginFormik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+    validationSchema: loginValidationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const payload = {
+          email: values.email.trim().toLowerCase(),
+          password: values.password,
+          remember_me: values.rememberMe,
+        };
+
+        const response = await makeApiRequest(apiurl.login, {
+          method: 'POST',
+          data: payload,
+        });
+
+        if (response?.success && response?.data?.token) {
+          setAuthToken(response.data.token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+          notify({ message: response.message || 'Login successful!', type: 'success' });
+          if (onSuccess) onSuccess();
+        }
+      } catch (error: any) {
+        console.error('Login error:', error);
+        const errorMessage = error?.response?.data?.message || 'Login failed. Please try again.';
+        notify({ message: errorMessage, type: 'error' });
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
+
+  const handleProfileSelect = (type: 'customer' | 'agency') => {
+    setProfileType(type);
+    signupFormik.setFieldValue('_profileType', type);
   };
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
-  };
+  const formik = mode === 'signup' ? signupFormik : loginFormik;
 
+  // Step 1: profile type selection (signup only)
+  if (mode === 'signup' && profileType === null) {
+    return (
+      <div className="w-full">
+        <p className="text-gray-500 text-sm text-center mb-6">
+          Choose how you want to create your account.
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            type="button"
+            onClick={() => handleProfileSelect('customer')}
+            className="flex flex-col items-center gap-4 p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-200 group"
+          >
+            <div className="w-16 h-16 bg-emerald-100 group-hover:bg-emerald-200 rounded-full flex items-center justify-center transition-colors">
+              <User className="w-8 h-8 text-emerald-600" />
+            </div>
+            <div className="text-center">
+              <h3 className="font-semibold text-gray-900 text-base">Customer</h3>
+              <p className="text-gray-500 text-sm mt-1">Browse and book travel experiences</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleProfileSelect('agency')}
+            className="flex flex-col items-center gap-4 p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-200 group"
+          >
+            <div className="w-16 h-16 bg-emerald-100 group-hover:bg-emerald-200 rounded-full flex items-center justify-center transition-colors">
+              <Building2 className="w-8 h-8 text-emerald-600" />
+            </div>
+            <div className="text-center">
+              <h3 className="font-semibold text-gray-900 text-base">Agency</h3>
+              <p className="text-gray-500 text-sm mt-1">List and manage travel packages</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: registration form
   return (
     <div className="w-full">
-      {/* Header */}
-      <div className="mb-6">
+      {mode === 'signup' && (
+        <button
+          type="button"
+          onClick={() => setProfileType(null)}
+          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+      )}
+
+      <div className="mb-5">
         <p className="text-gray-600 text-sm">
-          {mode === 'login' 
-            ? 'Welcome back! Please login to your account.' 
-            : 'Create an account to get started.'}
+          {mode === 'login'
+            ? 'Welcome back! Please login to your account.'
+            : `Creating ${profileType === 'agency' ? 'an Agency' : 'a Customer'} account`}
         </p>
       </div>
 
-      {/* Social Login Buttons */}
-      <div className="space-y-3 mb-6">
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full h-11 border-2 hover:bg-gray-50"
-          onClick={() => handleSocialLogin('google')}
-        >
-          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="currentColor"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            />
-          </svg>
-          Continue with Google
-        </Button>
-        
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full h-11 border-2 hover:bg-gray-50"
-          onClick={() => handleSocialLogin('facebook')}
-        >
-          <svg className="w-5 h-5 mr-2" fill="#1877F2" viewBox="0 0 24 24">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-          Continue with Facebook
-        </Button>
-      </div>
+      <form onSubmit={formik.handleSubmit} className="space-y-4">
 
-      {/* Divider */}
-      <div className="relative my-6">
-        <Separator />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-sm text-gray-500">
-          Or {mode === 'login' ? 'login' : 'sign up'} with email
-        </span>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        
-        {/* Name Field - Only for Signup */}
+        {/* First Name + Last Name */}
         {mode === 'signup' && (
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-              Full Name
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                className="pl-11 h-11 border-2 focus:border-emerald-500"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
+          <div className="flex gap-2.5 items-start">
+            <div className="space-y-1 flex-1">
+              <Label htmlFor="first_name" className="text-sm font-medium text-gray-700">
+                First Name <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="first_name"
+                  type="text"
+                  placeholder="John"
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.first_name && signupFormik.errors.first_name ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('first_name')}
+                />
+              </div>
+              {signupFormik.touched.first_name && signupFormik.errors.first_name && (
+                <p className="text-xs text-red-500">{signupFormik.errors.first_name}</p>
+              )}
+            </div>
+
+            <div className="space-y-1 flex-1">
+              <Label htmlFor="last_name" className="text-sm font-medium text-gray-700">
+                Last Name <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="last_name"
+                  type="text"
+                  placeholder="Doe"
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.last_name && signupFormik.errors.last_name ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('last_name')}
+                />
+              </div>
+              {signupFormik.touched.last_name && signupFormik.errors.last_name && (
+                <p className="text-xs text-red-500">{signupFormik.errors.last_name}</p>
+              )}
             </div>
           </div>
         )}
 
-        {/* Email Field */}
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-            Email Address
-          </Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@example.com"
-              className="pl-11 h-11 border-2 focus:border-emerald-500"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-
-        {/* Phone Field - Only for Signup */}
-        {mode === 'signup' && (
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-              Phone Number
+        {/* Email + Phone */}
+        <div className={`${mode === 'signup' ? 'flex gap-2.5 items-start' : ''}`}>
+          <div className="space-y-1 flex-1">
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              Email Address <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                id="phone"
-                type="tel"
-                placeholder="+1 (555) 000-0000"
-                className="pl-11 h-11 border-2 focus:border-emerald-500"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
+                id="email"
+                type="email"
+                placeholder="name@example.com"
+                className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                  formik.touched.email && formik.errors.email ? 'border-red-500' : ''
+                }`}
+                {...formik.getFieldProps('email')}
               />
             </div>
+            {formik.touched.email && formik.errors.email && (
+              <p className="text-xs text-red-500">{formik.errors.email}</p>
+            )}
           </div>
-        )}
 
-        {/* Password Field */}
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-            Password
-          </Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
-              className="pl-11 pr-11 h-11 border-2 focus:border-emerald-500"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
+          {mode === 'signup' && (
+            <div className="space-y-1 flex-1">
+              <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                Phone Number <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+1234567890"
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.phone && signupFormik.errors.phone ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('phone')}
+                />
+              </div>
+              {signupFormik.touched.phone && signupFormik.errors.phone && (
+                <p className="text-xs text-red-500">{signupFormik.errors.phone}</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Country + Password */}
+        <div className={`${mode === 'signup' ? 'flex gap-2.5 items-start' : ''}`}>
+          {mode === 'signup' && (
+            <div className="space-y-1 flex-1">
+              <Label htmlFor="country" className="text-sm font-medium text-gray-700">
+                Country <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="country"
+                  type="text"
+                  placeholder="USA"
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.country && signupFormik.errors.country ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('country')}
+                />
+              </div>
+              {signupFormik.touched.country && signupFormik.errors.country && (
+                <p className="text-xs text-red-500">{signupFormik.errors.country}</p>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-1 flex-1">
+            <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              Password <span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                className={`pl-10 pr-10 h-11 border-2 focus:border-emerald-500 ${
+                  formik.touched.password && formik.errors.password ? 'border-red-500' : ''
+                }`}
+                {...formik.getFieldProps('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {formik.touched.password && formik.errors.password && (
+              <p className="text-xs text-red-500">{formik.errors.password}</p>
+            )}
           </div>
         </div>
 
-        {/* Confirm Password - Only for Signup */}
+        {/* Confirm Password */}
         {mode === 'signup' && (
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-              Confirm Password
+          <div className="space-y-1">
+            <Label htmlFor="password_confirmation" className="text-sm font-medium text-gray-700">
+              Confirm Password <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                id="confirmPassword"
+                id="password_confirmation"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="pl-11 pr-11 h-11 border-2 focus:border-emerald-500"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                required
+                className={`pl-10 pr-10 h-11 border-2 focus:border-emerald-500 ${
+                  signupFormik.touched.password_confirmation && signupFormik.errors.password_confirmation
+                    ? 'border-red-500'
+                    : ''
+                }`}
+                {...signupFormik.getFieldProps('password_confirmation')}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
+            </div>
+            {signupFormik.touched.password_confirmation && signupFormik.errors.password_confirmation && (
+              <p className="text-xs text-red-500">{signupFormik.errors.password_confirmation}</p>
+            )}
+          </div>
+        )}
+
+        {/* Agency Profile Fields */}
+        {mode === 'signup' && profileType === 'agency' && (
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+              <Building2 className="w-4 h-4 text-emerald-600" />
+              <h4 className="text-sm font-semibold text-gray-700">Agency Details</h4>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="agency_name" className="text-sm font-medium text-gray-700">
+                Agency Name <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="agency_name"
+                  type="text"
+                  placeholder="My Travel Agency"
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.agency_name && signupFormik.errors.agency_name ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('agency_name')}
+                />
+              </div>
+              {signupFormik.touched.agency_name && signupFormik.errors.agency_name && (
+                <p className="text-xs text-red-500">{signupFormik.errors.agency_name}</p>
+              )}
+            </div>
+
+            <div className="flex gap-2.5 items-start">
+              <div className="space-y-1 flex-1">
+                <Label htmlFor="tax_id" className="text-sm font-medium text-gray-700">
+                  Tax ID <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    id="tax_id"
+                    type="text"
+                    placeholder="TX-123456"
+                    className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                      signupFormik.touched.tax_id && signupFormik.errors.tax_id ? 'border-red-500' : ''
+                    }`}
+                    {...signupFormik.getFieldProps('tax_id')}
+                  />
+                </div>
+                {signupFormik.touched.tax_id && signupFormik.errors.tax_id && (
+                  <p className="text-xs text-red-500">{signupFormik.errors.tax_id}</p>
+                )}
+              </div>
+
+              <div className="space-y-1 flex-1">
+                <Label htmlFor="website" className="text-sm font-medium text-gray-700">
+                  Website <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    id="website"
+                    type="url"
+                    placeholder="https://myagency.com"
+                    className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                      signupFormik.touched.website && signupFormik.errors.website ? 'border-red-500' : ''
+                    }`}
+                    {...signupFormik.getFieldProps('website')}
+                  />
+                </div>
+                {signupFormik.touched.website && signupFormik.errors.website && (
+                  <p className="text-xs text-red-500">{signupFormik.errors.website}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Host Profile Fields */}
+            <div className="flex items-center gap-2 pb-1 border-b border-gray-100 mt-2">
+              <Briefcase className="w-4 h-4 text-emerald-600" />
+              <h4 className="text-sm font-semibold text-gray-700">Host Profile</h4>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="business_name" className="text-sm font-medium text-gray-700">
+                Business Name <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="business_name"
+                  type="text"
+                  placeholder="My Business Ltd."
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.business_name && signupFormik.errors.business_name ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('business_name')}
+                />
+              </div>
+              {signupFormik.touched.business_name && signupFormik.errors.business_name && (
+                <p className="text-xs text-red-500">{signupFormik.errors.business_name}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="business_registration_number" className="text-sm font-medium text-gray-700">
+                Business Registration Number <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="business_registration_number"
+                  type="text"
+                  placeholder="REG-123456789"
+                  className={`pl-10 h-11 border-2 focus:border-emerald-500 ${
+                    signupFormik.touched.business_registration_number && signupFormik.errors.business_registration_number ? 'border-red-500' : ''
+                  }`}
+                  {...signupFormik.getFieldProps('business_registration_number')}
+                />
+              </div>
+              {signupFormik.touched.business_registration_number && signupFormik.errors.business_registration_number && (
+                <p className="text-xs text-red-500">{signupFormik.errors.business_registration_number}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="bio" className="text-sm font-medium text-gray-700">
+                Bio <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <textarea
+                  id="bio"
+                  rows={3}
+                  placeholder="Tell us about your business..."
+                  className={`w-full pl-10 pr-3 py-2 border-2 rounded-md text-sm focus:outline-none focus:border-emerald-500 resize-none ${
+                    signupFormik.touched.bio && signupFormik.errors.bio ? 'border-red-500' : 'border-input'
+                  }`}
+                  {...signupFormik.getFieldProps('bio')}
+                />
+              </div>
+              {signupFormik.touched.bio && signupFormik.errors.bio && (
+                <p className="text-xs text-red-500">{signupFormik.errors.bio}</p>
+              )}
             </div>
           </div>
         )}
 
-        {/* Remember Me / Terms - Conditional */}
+        {/* Remember Me / Terms */}
         {mode === 'login' ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="remember"
-                checked={formData.rememberMe}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, rememberMe: checked as boolean })
-                }
+              <Checkbox
+                id="rememberMe"
+                checked={loginFormik.values.rememberMe}
+                onCheckedChange={(checked) => loginFormik.setFieldValue('rememberMe', checked)}
               />
-              <Label 
-                htmlFor="remember" 
-                className="text-sm text-gray-600 cursor-pointer"
-              >
+              <Label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">
                 Remember me
               </Label>
             </div>
-            <Link 
-              href="/forgot-password" 
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
-            >
+            <Link href="/forgot-password" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
               Forgot password?
             </Link>
           </div>
         ) : (
-          <div className="flex items-start space-x-2">
-            <Checkbox 
-              id="terms"
-              checked={formData.agreeToTerms}
-              onCheckedChange={(checked) => 
-                setFormData({ ...formData, agreeToTerms: checked as boolean })
-              }
-              required
-            />
-            <Label 
-              htmlFor="terms" 
-              className="text-sm text-gray-600 cursor-pointer leading-relaxed"
-            >
-              I agree to the{' '}
-              <Link href="/terms" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                Terms of Service
-              </Link>
-              {' '}and{' '}
-              <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                Privacy Policy
-              </Link>
-            </Label>
-          </div>
+          <>
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="agreeToTerms"
+                checked={signupFormik.values.agreeToTerms}
+                onCheckedChange={(checked) => signupFormik.setFieldValue('agreeToTerms', checked)}
+              />
+              <Label htmlFor="agreeToTerms" className="text-sm text-gray-600 cursor-pointer leading-relaxed">
+                I agree to the{' '}
+                <Link href="/terms" className="text-emerald-600 hover:text-emerald-700 font-medium">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700 font-medium">
+                  Privacy Policy
+                </Link>
+              </Label>
+            </div>
+            {signupFormik.touched.agreeToTerms && signupFormik.errors.agreeToTerms && (
+              <p className="text-xs text-red-500">{signupFormik.errors.agreeToTerms}</p>
+            )}
+          </>
         )}
 
         {/* Submit Button */}
         <Button
           type="submit"
-          className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg shadow-emerald-600/30 mt-6"
-          disabled={isLoading}
+          className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg shadow-emerald-600/30 mt-2"
+          disabled={formik.isSubmitting}
         >
-          {isLoading ? (
+          {formik.isSubmitting ? (
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               Processing...
@@ -310,9 +701,9 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
 
       {/* Toggle Mode */}
       {onToggleMode && (
-        <div className="mt-6 text-center">
+        <div className="mt-5 text-center">
           <p className="text-sm text-gray-600">
-            {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+            {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
             <button
               type="button"
               onClick={onToggleMode}
