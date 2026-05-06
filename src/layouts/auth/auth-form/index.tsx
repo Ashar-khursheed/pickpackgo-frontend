@@ -656,21 +656,18 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
           </div>
         ) : (
           <>
-            <div className="flex items-start space-x-2">
+            <div className="flex items-center gap-2">
               <Checkbox
                 id="agreeToTerms"
                 checked={signupFormik.values.agreeToTerms}
                 onCheckedChange={(checked) => signupFormik.setFieldValue('agreeToTerms', checked)}
+                className="shrink-0 mt-0.5"
               />
-              <Label htmlFor="agreeToTerms" className="text-sm text-gray-600 cursor-pointer leading-relaxed">
+              <Label htmlFor="agreeToTerms" className="text-sm text-gray-600 cursor-pointer leading-snug">
                 I agree to the{' '}
-                <Link href="/terms" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                  Privacy Policy
-                </Link>
+                <Link href="/terms" className="text-emerald-600 hover:text-emerald-700 font-medium whitespace-nowrap">Terms of Service</Link>
+                {' '}and{' '}
+                <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700 font-medium whitespace-nowrap">Privacy Policy</Link>
               </Label>
             </div>
             {signupFormik.touched.agreeToTerms && signupFormik.errors.agreeToTerms && (

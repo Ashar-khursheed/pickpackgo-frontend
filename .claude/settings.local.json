@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(New-Item -ItemType Directory -Path \"c:\\\\Arshad\\\\Arshad-All-Personal\\\\Arshad Khan\\\\Arshad-------Al------\\\\Arshad-All\\\\Arshad PC\\\\AK\\\\Ashar Freelancing\\\\my-app\\\\src\\\\app\\\\\\(pages\\)\\\\login\" -Force)",
+      "Bash(New-Item -ItemType Directory -Path \"c:\\\\Arshad\\\\Arshad-All-Personal\\\\Arshad Khan\\\\Arshad-------Al------\\\\Arshad-All\\\\Arshad PC\\\\AK\\\\Ashar Freelancing\\\\my-app\\\\src\\\\app\\\\\\(pages\\)\\\\signup\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Arshad\\\\Arshad-All-Personal\\\\Arshad Khan\\\\Arshad-------Al------\\\\Arshad-All\\\\Arshad PC\\\\AK\\\\Ashar Freelancing\\\\my-app\\\\src\\\\app\\\\\\(pages\\)\\\\login\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Arshad\\\\Arshad-All-Personal\\\\Arshad Khan\\\\Arshad-------Al------\\\\Arshad-All\\\\Arshad PC\\\\AK\\\\Ashar Freelancing\\\\my-app\\\\src\\\\app\\\\\\(pages\\)\\\\signup\" -Force)"
+    ]
+  }
+}
