@@ -3,6 +3,7 @@ export const navlink = [
   { name: "Flights", href: "/booking" },
   { name: "Packages", href: "/booking" },
   { name: "Business", href: "/booking" },
+  { name: "Blog", href: "/blog" },
 ];
 
 export const destinations = [

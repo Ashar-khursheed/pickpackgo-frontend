@@ -314,7 +314,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import BlackLogo from "@/assets/black-logo.svg";
 import { Modal } from "@/components/ui/modal";
 import ModalAuthForm from "../auth/auth-form";
@@ -334,6 +334,7 @@ const Header = () => {
   const [loggingOut, setLoggingOut] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
   const isHomePage = pathname === "/";
 
@@ -505,7 +506,10 @@ const Header = () => {
 
                           {/* Menu items */}
                           <div className="py-1">
-                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left">
+                            <button
+                              onClick={() => { setDropdownOpen(false); router.push('/dashboard'); }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
+                            >
                               <UserCircle2 className="w-4 h-4 text-gray-500" />
                               <div>
                                 <p className="text-sm font-medium text-gray-800">
@@ -516,7 +520,10 @@ const Header = () => {
                                 </p>
                               </div>
                             </button>
-                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left">
+                            <button
+                              onClick={() => { setDropdownOpen(false); router.push('/dashboard?tab=settings'); }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
+                            >
                               <Settings className="w-4 h-4 text-gray-500" />
                               <div>
                                 <p className="text-sm font-medium text-gray-800">
