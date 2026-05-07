@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,14 +20,36 @@ import {
   CalendarIcon,
   Users,
   Search,
+  Minus,
+  Plus,
 } from "lucide-react";
 
-export default function SearchBar() {
+interface SearchBarProps {
+  initialLocation?: string;
+  initialCheckIn?: string;
+  initialCheckOut?: string;
+  initialGuests?: number;
+}
+
+export default function SearchBar({
+  initialLocation = "",
+  initialCheckIn = "",
+  initialCheckOut = "",
+  initialGuests = 2,
+}: SearchBarProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("all-stays");
-  const [destination, setDestination] = useState("");
-  const [checkIn, setCheckIn] = useState<Date>();
-  const [checkOut, setCheckOut] = useState<Date>();
-  const [travelers, setTravelers] = useState(2);
+  const [destination, setDestination] = useState(initialLocation);
+  const [checkIn, setCheckIn] = useState<Date | undefined>(
+    initialCheckIn ? new Date(initialCheckIn) : undefined
+  );
+  const [checkOut, setCheckOut] = useState<Date | undefined>(
+    initialCheckOut ? new Date(initialCheckOut) : undefined
+  );
+  const [guests, setGuests] = useState(initialGuests);
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
+  const [guestsOpen, setGuestsOpen] = useState(false);
 
   const tabs = [
     { value: "all-stays", label: "All Stays", icon: Home },
@@ -38,22 +61,32 @@ export default function SearchBar() {
     { value: "experiences", label: "Experiences", icon: Sparkles },
   ];
 
+  const handleSearch = () => {
+    if (!destination.trim()) return;
+    const p = new URLSearchParams();
+    p.set("location", destination.trim());
+    if (checkIn) p.set("checkIn", format(checkIn, "yyyy-MM-dd"));
+    if (checkOut) p.set("checkOut", format(checkOut, "yyyy-MM-dd"));
+    p.set("guests", String(guests));
+    router.push(`/search?${p.toString()}`);
+  };
+
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0">
+          <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-green-600 data-[state=active]:bg-transparent data-[state=active]:text-green-600 px-6 py-4 gap-2"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-emerald-600 data-[state=active]:bg-transparent data-[state=active]:text-emerald-600 px-4 py-3 gap-2 shrink-0"
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="hidden sm:inline text-sm">{tab.label}</span>
                 </TabsTrigger>
               );
             })}
@@ -61,99 +94,140 @@ export default function SearchBar() {
         </Tabs>
 
         {/* Search Fields */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div className="p-5">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
             {/* Where to? */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
+            <div className="space-y-1.5 md:col-span-1">
+              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
                 Where to?
               </label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600" />
                 <Input
-                  placeholder="Search destinations"
+                  placeholder="City, area, property name"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  className="pl-10 h-12 border-gray-200 focus:border-green-500 focus:ring-green-500"
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="pl-9 h-11 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm"
                 />
               </div>
             </div>
 
-            {/* Dates */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Dates</label>
-              <Popover>
+            {/* Check-in */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                Check-in
+              </label>
+              <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full h-12 justify-start text-left font-normal border-gray-200 hover:border-green-500"
+                    className="w-full h-11 justify-start text-left font-normal border-gray-200 hover:border-emerald-500 text-sm"
                   >
-                    <CalendarIcon className="mr-2 h-5 w-5 text-gray-400" />
-                    {checkIn && checkOut ? (
-                      <span>
-                        {format(checkIn, "MMM dd")} - {format(checkOut, "MMM dd")}
-                      </span>
+                    <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600 shrink-0" />
+                    {checkIn ? (
+                      <span className="text-gray-800">{format(checkIn, "MMM d, yyyy")}</span>
                     ) : (
-                      <span className="text-gray-400">Add dates</span>
+                      <span className="text-gray-400">Add date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-200" align="start">
                   <Calendar
                     mode="single"
                     selected={checkIn}
-                    onSelect={setCheckIn}
+                    onSelect={(d) => { setCheckIn(d); setCheckInOpen(false); }}
+                    disabled={(d) => d < new Date()}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
 
-            {/* Travelers */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Travelers
+            {/* Check-out */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                Check-out
               </label>
-              <Popover>
+              <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full h-12 justify-start text-left font-normal border-gray-200 hover:border-green-500"
+                    className="w-full h-11 justify-start text-left font-normal border-gray-200 hover:border-emerald-500 text-sm"
                   >
-                    <Users className="mr-2 h-5 w-5 text-gray-400" />
-                    <span>{travelers} travelers</span>
+                    <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600 shrink-0" />
+                    {checkOut ? (
+                      <span className="text-gray-800">{format(checkOut, "MMM d, yyyy")}</span>
+                    ) : (
+                      <span className="text-gray-400">Add date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-64" align="start">
-                  <div className="space-y-4">
+                <PopoverContent className="w-auto p-0 z-200" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={checkOut}
+                    onSelect={(d) => { setCheckOut(d); setCheckOutOpen(false); }}
+                    disabled={(d) => d < (checkIn ?? new Date())}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Guests */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                Guests
+              </label>
+              <Popover open={guestsOpen} onOpenChange={setGuestsOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full h-11 justify-start text-left font-normal border-gray-200 hover:border-emerald-500 text-sm"
+                  >
+                    <Users className="mr-2 h-4 w-4 text-emerald-600 shrink-0" />
+                    <span className="text-gray-800">{guests} {guests === 1 ? "guest" : "guests"}</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 z-200" align="start">
+                  <div className="p-2">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Guests</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Adults</span>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setTravelers(Math.max(1, travelers - 1))}
+                      <span className="text-sm font-medium text-gray-800">Adults</span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setGuests(Math.max(1, guests - 1))}
+                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-emerald-500 transition-colors"
                         >
-                          -
-                        </Button>
-                        <span className="w-8 text-center">{travelers}</span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setTravelers(travelers + 1)}
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="w-6 text-center font-semibold text-gray-900">{guests}</span>
+                        <button
+                          onClick={() => setGuests(guests + 1)}
+                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-emerald-500 transition-colors"
                         >
-                          +
-                        </Button>
+                          <Plus className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
+                    <Button
+                      onClick={() => setGuestsOpen(false)}
+                      className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 text-white h-9 text-sm"
+                    >
+                      Done
+                    </Button>
                   </div>
                 </PopoverContent>
               </Popover>
             </div>
 
             {/* Search Button */}
-            <Button className="h-12 bg-green-600 hover:bg-green-700 text-white font-semibold text-base">
-              <Search className="w-5 h-5 mr-2" />
+            <Button
+              onClick={handleSearch}
+              className="h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm"
+            >
+              <Search className="w-4 h-4 mr-2" />
               Search
             </Button>
           </div>

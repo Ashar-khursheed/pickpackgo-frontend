@@ -17,7 +17,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#0F172A]  py-12 text-gray-300">
+    <footer className="bg-[#0d1637] py-12 text-gray-300">
       <div className="global-container">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">

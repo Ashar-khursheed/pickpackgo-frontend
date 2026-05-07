@@ -67,7 +67,7 @@ export default async function BlogPage() {
       <Header />
       <main className="min-h-screen bg-gray-50">
         {/* Hero */}
-        <section className="bg-[#0f1c2e] py-16 px-4">
+        <section className="bg-[#0d1637] py-16 px-4">
           <div className="global-container text-center">
             <p className="text-emerald-400 text-sm font-semibold uppercase tracking-widest mb-3">
               Our Blog

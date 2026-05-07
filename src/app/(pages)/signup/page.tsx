@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Logo from '@/assets/black-logo.svg';
+import Logo from '@/assets/logo.svg';
 import ModalAuthForm from '@/layouts/auth/auth-form';
 
 const SignupPage = () => {
@@ -17,7 +17,7 @@ const SignupPage = () => {
   return (
     <section className="min-h-screen bg-gray-50 flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-100 px-6 py-4">
+      <div className="bg-[#0d1637] px-6 py-4">
         <Link href="/">
           <Image src={Logo} alt="PikPakGo Logo" className="w-28 h-auto" priority />
         </Link>
@@ -26,10 +26,10 @@ const SignupPage = () => {
       {/* Form area */}
       <div className="flex flex-1 items-center justify-center px-4 py-10">
         <div className="w-full max-w-[520px] bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Create your account</h1>
+          <h1 className="text-2xl font-bold text-[#0d1637] mb-1">Create your account</h1>
           <p className="text-sm text-gray-500 mb-6">
             Already have an account?{' '}
-            <Link href="/login" className="text-[#16A34A] font-medium hover:underline">
+            <Link href="/login" className="text-emerald-600 font-medium hover:underline">
               Log in
             </Link>
           </p>

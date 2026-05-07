@@ -401,7 +401,7 @@ const Header = () => {
         className={cn(
           "sticky top-0 z-50 transition-all duration-300",
           scrolled && "backdrop-blur-md shadow-lg",
-          !isHomePage && "bg-white shadow-md", // White background for non-homepage
+          !isHomePage && "bg-[#fff] shadow-md",
         )}
       >
         <div className="global-container">
@@ -426,13 +426,11 @@ const Header = () => {
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className={cn(
-                          "text-[17px] font-medium hover:text-[#16A34A] transition-colors relative group",
-                          isHomePage ? "text-white" : "text-black",
-                        )}
+                        className={`text-[17px] font-medium ${isHomePage ? 'text-[#fff]' : 'text-[#0d1637]'} hover:text-emerald-400 transition-colors relative group`}
+                        // className="text-[17px] font-medium text-[#0d1637] hover:text-emerald-400 transition-colors relative group"
                       >
                         {link.name}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#16A34A] group-hover:w-full transition-all duration-300" />
+                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300" />
                       </Link>
                     </li>
                   ))}
@@ -444,23 +442,16 @@ const Header = () => {
                 <div className="flex items-center gap-4">
                   <Link
                     href="/become-host"
-                    className={cn(
-                      "text-[17px] font-normal hover:text-[#16A34A] transition-colors",
-                      isHomePage ? "text-white" : "text-black",
-                    )}
+                    className={`text-[17px] font-normal ${isHomePage ? 'text-[#fff]' : 'text-[#0d1637]'} hover:text-emerald-400 transition-colors`}
+                    // className="text-[17px] font-normal text-[#0d1637] hover:text-emerald-400 transition-colors"
                   >
                     Become a Host
                   </Link>
                   <button
-                    className={cn(
-                      "hover:text-[#16A34A] transition-colors p-2 rounded-lg",
-                      isHomePage
-                        ? "text-white hover:bg-white/5"
-                        : "text-black hover:bg-black/5",
-                    )}
+                    className="text-[#0d1637] hover:text-emerald-400 hover:bg-[#0d1637]/5 transition-colors p-2 rounded-lg"
                     aria-label="Change language"
                   >
-                    <Globe />
+                    <Globe   />
                   </button>
                 </div>
                 <div className="flex items-center gap-4">
@@ -576,7 +567,7 @@ const Header = () => {
                   ) : (
                     <>
                       <Button
-                        className="text-[17px] font-medium hover:bg-transparent text-[#16A34A] transition-colors bg-white"
+                        className="text-[17px] font-medium bg-transparent hover:bg-white/10 text-white transition-colors border border-white/30"
                         onClick={() =>
                           setIsModal({ ...isModal, loginModal: true })
                         }
@@ -584,7 +575,7 @@ const Header = () => {
                         Login
                       </Button>
                       <Button
-                        className="bg-[#16A34A] text-white hover:bg-[#15803d] rounded-md px-6 shadow-lg shadow-[#16A34A]/20"
+                        className="bg-emerald-600 text-white hover:bg-emerald-700 rounded-md px-6 shadow-lg shadow-emerald-600/20"
                         onClick={() =>
                           setIsModal({ ...isModal, signupModal: true })
                         }
@@ -601,21 +592,11 @@ const Header = () => {
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                   <SheetTrigger asChild>
                     <button
-                      className={cn(
-                        "p-2 rounded-lg transition-colors",
-                        isHomePage
-                          ? "text-white hover:bg-white/10"
-                          : "text-black hover:bg-black/10",
-                      )}
+                      className="p-2 rounded-lg transition-colors text-[#0d1637] hover:bg-white/10"
                       aria-label="Toggle menu"
                     >
                       {isOpen ? (
-                        <X
-                          className={cn(
-                            "h-6 w-6",
-                            isHomePage ? "text-white" : "text-black",
-                          )}
-                        />
+                        <X className="h-6 w-6 text-[#0d1637]" />
                       ) : (
                         <Menu className="h-6 w-6" />
                       )}
@@ -623,7 +604,7 @@ const Header = () => {
                   </SheetTrigger>
                   <SheetContent
                     side="right"
-                    className="w-[85vw] sm:w-[400px] bg-[#0f1c2e] border-l border-white/10 p-0"
+                    className="w-[85vw] sm:w-[400px] bg-[#0d1637] border-l border-white/10 p-0"
                   >
                     <div className="flex flex-col h-full p-6">
                       {/* Mobile Header */}
@@ -682,7 +663,7 @@ const Header = () => {
                           className="flex items-center gap-3 w-full py-3 px-4 rounded-lg hover:bg-white/5 transition-colors"
                           aria-label="Change language"
                         >
-                          <Globe />
+                          <Globe  />
                           <span className="text-white text-sm">
                             English (US)
                           </span>
@@ -691,13 +672,13 @@ const Header = () => {
                           <Link href="/login" onClick={() => setIsOpen(false)}>
                             <Button
                               variant="outline"
-                              className="w-full border-white/20 text-black hover:bg-white/10 h-12"
+                              className="w-full border-white/30 text-white bg-transparent hover:bg-white/10 h-12"
                             >
                               Login
                             </Button>
                           </Link>
                           <Link href="/signup" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#16A34A] text-white hover:bg-[#15803d] h-12 shadow-lg shadow-[#16A34A]/20">
+                            <Button className="w-full bg-emerald-600 text-white hover:bg-emerald-700 h-12 shadow-lg shadow-emerald-600/20">
                               Sign Up
                             </Button>
                           </Link>

@@ -20,7 +20,7 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
 }) => {
   return (
    <>
-   <Link href={`/booking`} passHref>
+   <Link href={`/property-listing`} passHref>
     <div className="group relative w-full max-w-md 2xl:h-[600px] md:h-[400px] h-[250px] rounded-3xl overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-shadow duration-300">
       {/* Background Image with Zoom Effect */}
       <div

@@ -51,7 +51,7 @@ export default function Home() {
               <div className="md:w-auto w-full">
                 <h1 className="text-white font-bold md:text-6xl text-2xl text-center">
                   Hotels, Rentals & Experiences.{" "}
-                  <span className="block text-[#DBEAFE]"> In One Place.</span>
+                  <span className="block text-emerald-300"> In One Place.</span>
                 </h1>
                 <p className="mt-6 text-white text-center text-lg">
                   Discover the world's best stays and activities with our
@@ -76,7 +76,7 @@ export default function Home() {
         <div className="global-container">
           <div className="grid md:grid-cols-2 grid-cols-1 gap-4 items-center justify-between">
             <div className="">
-              <h2 className="text-[#0F172A] md:text-3xl text-xl font-extrabold">
+              <h2 className="text-[#0d1637] md:text-3xl text-xl font-extrabold">
                 Top Destinations for 2026
               </h2>
               <p className="text-[#64748B] md:text-xl text-base font-light mt-3">
@@ -113,7 +113,7 @@ export default function Home() {
           </div>
           <div className="pt-30 md:text-center text-left">
             <div>
-              <h2 className="text-[#0F172A] md:text-5xl font-bold text-xl">
+              <h2 className="text-[#0d1637] md:text-5xl font-bold text-xl">
                 Travel Services
               </h2>
               <p className="text-[#475569] md:text-lg text-base font-light mt-4">
@@ -187,7 +187,7 @@ export default function Home() {
         <div className="global-container">
           <div className="grid md:grid-cols-1 grid-cols-1 gap-4 items-center justify-between">
             <div className="text-center">
-              <h2 className="text-[#0F172A] md:text-3xl text-xl font-extrabold">
+              <h2 className="text-[#0d1637] md:text-3xl text-xl font-extrabold">
                 Hotels + Vacation Rentals — Together in One Search
               </h2>
               <p className="text-[#64748B] md:text-xl text-base font-light mt-3">
@@ -274,7 +274,7 @@ export default function Home() {
       <section className="md:py-20 pb-10 bg-[#fff] relative">
         <div className="global-container relative">
           <div className="grid grid-cols-1 justify-center items-center text-center">
-            <h2 className="text-[#0F172A] md:text-3xl text-xl font-bold">
+            <h2 className="text-[#0d1637] md:text-3xl text-xl font-bold">
               Earn Rewards Every Time You Travel
             </h2>
             <p className="text-[#475569] md:text-xl text-base font-light mt-4">
@@ -334,11 +334,11 @@ export default function Home() {
           <div className="grid md:grid-cols-2 grid-cols-1  items-center justify-between">
             <div>
               <div className="self-start">
-                <span className="inline-block px-4 py-1.5 bg-[#DBEAFE] text-[#1D4ED8] text-[12px] font-semibold rounded-full uppercase tracking-wide">
+                <span className="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-800 text-[12px] font-semibold rounded-full uppercase tracking-wide">
                   For Professionals
                 </span>
               </div>
-              <h2 className="text-[#0F172A] 2xl:text-5xl md:text-3xl  text-xl font-bold py-5">
+              <h2 className="text-[#0d1637] 2xl:text-5xl md:text-3xl  text-xl font-bold py-5">
                 Travel Agencies &
                 <span className="block">Corporate Partners</span>
               </h2>
@@ -419,7 +419,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Button className="mt-10 bg-[#F97316] hover:bg-[#F97316] cursor-pointer text-white md:text-lg  hover:text-white text-base font-medium px-10 py-6 rounded-sm hover:shadow-xl transition-all duration-300">
+                <Button className="mt-10 bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white md:text-lg hover:text-white text-base font-medium px-10 py-6 rounded-sm hover:shadow-xl transition-all duration-300">
                   Get Started
                 </Button>
               </div>

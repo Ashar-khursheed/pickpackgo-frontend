@@ -1,8 +1,8 @@
 export const navlink = [
-  { name: "Stays", href: "/booking" },
-  { name: "Flights", href: "/booking" },
-  { name: "Packages", href: "/booking" },
-  { name: "Business", href: "/booking" },
+  { name: "Stays", href: "/property-listing" },
+  { name: "Flights", href: "/property-listing" },
+  { name: "Packages", href: "/property-listing" },
+  { name: "Business", href: "/property-listing" },
   { name: "Blog", href: "/blog" },
 ];
 
