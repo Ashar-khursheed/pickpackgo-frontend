@@ -3,10 +3,10 @@
 <g clip-path="url(#clip0_1_2148)">
 <rect x="38" y="13" width="347" height="421.3" rx="21" fill="url(#paint0_linear_1_2148)"/>
 <g filter="url(#filter1_f_1_2148)">
-<rect x="119" y="-57" width="336" height="336" rx="168" fill="white" fill-opacity="0.1"/>
+<rect x="119" y="-57" width="336" height="336" rx="168" fill="white" fillOpacity="0.1"/>
 </g>
 <foreignObject x="54" y="29" width="62.5" height="62.5"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(6px);clip-path:url(#bgblur_1_1_2148_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="12">
-<rect x="66" y="41" width="38.5" height="38.5" rx="10.5" fill="white" fill-opacity="0.2"/>
+<rect x="66" y="41" width="38.5" height="38.5" rx="10.5" fill="white" fillOpacity="0.2"/>
 <path d="M85.25 56.75V53.25H81.75" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
 <path d="M90.5 56.75H80C79.0335 56.75 78.25 57.5335 78.25 58.5V65.5C78.25 66.4665 79.0335 67.25 80 67.25H90.5C91.4665 67.25 92.25 66.4665 92.25 65.5V58.5C92.25 57.5335 91.4665 56.75 90.5 56.75Z" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
 <path d="M76.5 62H78.25" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>

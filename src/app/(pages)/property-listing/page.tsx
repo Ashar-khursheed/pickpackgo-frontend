@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SlidersHorizontal } from 'lucide-react';
 import Header from '@/layouts/header';
 import PropertyFiltersClient from './_components/PropertyFiltersClient';
 import PropertyListClient from './_components/PropertyListClient';
+import MobileFilterSheet from './_components/MobileFilterSheet';
 
 const API_BASE = 'https://pickpackgo.in-sourceit.com/api';
 
@@ -157,18 +157,11 @@ export default async function PropertyListingPage({
           <main className="flex-1 min-w-0">
             {/* Mobile filter bar */}
             <div className="lg:hidden flex items-center gap-3 mb-4">
-              <Link
-                href="/property-listing"
-                className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white hover:bg-gray-50"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                Filters
-                {hasFilters && (
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </Link>
+              <MobileFilterSheet
+                initialParams={stringParams}
+                hasFilters={hasFilters}
+                activeFilterCount={activeFilterCount}
+              />
               <span className="text-sm text-gray-500">{total} results</span>
             </div>
 

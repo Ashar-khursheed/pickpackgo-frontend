@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,27 @@ interface SearchBarProps {
   initialGuests?: number;
 }
 
+interface CityResult {
+  type: "city";
+  label: string;
+  value: string;
+  property_count: number;
+  country_code: string;
+}
+
+interface PropertyResult {
+  type: "property";
+  label: string;
+  value: string;
+  seo_slug: string;
+  subtitle: string;
+  image: string;
+  price_from: string;
+  currency: string;
+}
+
+type AutocompleteResult = CityResult | PropertyResult;
+
 export default function SearchBar({
   initialLocation = "",
   initialCheckIn = "",
@@ -51,18 +73,76 @@ export default function SearchBar({
   const [checkOutOpen, setCheckOutOpen] = useState(false);
   const [guestsOpen, setGuestsOpen] = useState(false);
 
+  const [suggestions, setSuggestions] = useState<AutocompleteResult[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const fetchSuggestions = useCallback(async (query: string) => {
+    if (query.trim().length < 2) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+    setLoadingSuggestions(true);
+    try {
+      const res = await fetch(
+        `/api/autocomplete?q=${encodeURIComponent(query)}&limit=7`
+      );
+      const json = await res.json();
+      if (json.success) {
+        setSuggestions(json.data);
+        setShowDropdown(true);
+      }
+    } catch {
+      setSuggestions([]);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  }, []);
+
+  const handleDestinationChange = (value: string) => {
+    setDestination(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(value), 300);
+  };
+
+  const handleSelectCity = (item: CityResult) => {
+    setDestination(item.label);
+    setSuggestions([]);
+    setShowDropdown(false);
+  };
+
+  const handleSelectProperty = (item: PropertyResult) => {
+    setDestination(item.label);
+    setSuggestions([]);
+    setShowDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const tabs = [
     { value: "all-stays", label: "All Stays", icon: Home },
     { value: "hotels", label: "Hotels", icon: Building2 },
-    { value: "rentals", label: "Rentals", icon: Hotel },
-    { value: "flights", label: "Flights", icon: Plane },
-    { value: "car-rentals", label: "Car Rentals", icon: Car },
-    { value: "bundles", label: "Bundles", icon: Package },
-    { value: "experiences", label: "Experiences", icon: Sparkles },
+    // { value: "rentals", label: "Rentals", icon: Hotel },
+    // { value: "flights", label: "Flights", icon: Plane },
+    // { value: "car-rentals", label: "Car Rentals", icon: Car },
+    // { value: "bundles", label: "Bundles", icon: Package },
+    // { value: "experiences", label: "Experiences", icon: Sparkles },
   ];
 
   const handleSearch = () => {
     if (!destination.trim()) return;
+    setShowDropdown(false);
     const p = new URLSearchParams();
     p.set("location", destination.trim());
     if (checkIn) p.set("checkIn", format(checkIn, "yyyy-MM-dd"));
@@ -73,7 +153,7 @@ export default function SearchBar({
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-lg">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 overflow-x-auto">
@@ -101,15 +181,80 @@ export default function SearchBar({
               <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
                 Where to?
               </label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600" />
+              <div className="relative" ref={containerRef}>
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600 z-10" />
                 <Input
                   placeholder="City, area, property name"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  onChange={(e) => handleDestinationChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                    if (e.key === "Escape") setShowDropdown(false);
+                  }}
+                  onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
                   className="pl-9 h-11 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm"
+                  autoComplete="off"
                 />
+
+                {showDropdown && (
+                  <div className="absolute w-[428px] top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden max-h-80 overflow-y-auto">
+                    {loadingSuggestions ? (
+                      <div className="px-4 py-3 text-sm text-gray-500">Searching...</div>
+                    ) : suggestions.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-gray-500">No results found</div>
+                    ) : (
+                      suggestions.map((item, i) => {
+                        if (item.type === "city") {
+                          return (
+                            <button
+                              key={i}
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSelectCity(item)}
+                              className="w-full cursor-pointer flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition-colors text-left"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                <MapPin className="w-4 h-4 text-emerald-600" />
+                              </div>
+                              <div className="flex-1 min-w-0 cu">
+                                <p className="text-sm font-medium text-gray-900 truncate">{item.label}</p>
+                                <p className="text-xs text-gray-500">{item.property_count} properties</p>
+                              </div>
+                              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                                City
+                              </span>
+                            </button>
+                          );
+                        }
+                        return (
+                          <button
+                            key={i}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => handleSelectProperty(item)}
+                            className="w-full flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition-colors text-left"
+                          >
+                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                              <Image
+                                src={item.image}
+                                alt={item.label}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">{item.label}</p>
+                              <p className="text-xs text-gray-500 truncate">{item.subtitle}</p>
+                            </div>
+                            <span className="text-xs font-semibold text-gray-700 shrink-0">
+                              ${item.price_from}
+                              <span className="text-[10px] font-normal text-gray-400">/night</span>
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -225,7 +370,7 @@ export default function SearchBar({
             {/* Search Button */}
             <Button
               onClick={handleSearch}
-              className="h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm"
+              className="h-11 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm"
             >
               <Search className="w-4 h-4 mr-2" />
               Search

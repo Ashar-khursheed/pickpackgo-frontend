@@ -1,4 +1,3 @@
-"use client";
 import Container from "@/assets/home/Container.svg";
 import DestinationCard from "@/components/destination-card";
 import SearchBar from "@/components/search-bar";
@@ -16,7 +15,7 @@ import {
   RightIcon,
   RightIconGreen,
 } from "@/utils/icon";
-import { destinations, testimonials, vacationRentals } from "@/utils/mock-data";
+import { destinations, testimonials } from "@/utils/mock-data";
 import Image from "next/image";
 import BackgroundShasow from "@/assets/home/Background+Shadow.png";
 import SectionBG from "@/assets/home/Section.png";
@@ -26,7 +25,72 @@ import TestimonialCard from "@/components/testimonials-card";
 import MobileBG from "@/assets/home/mobileBG.png";
 import BGOne from "@/assets/home/Background+Shadow.svg";
 import Imag1 from "@/assets/home/Section.svg";
-export default function Home() {
+import Link from "next/link";
+
+interface Property {
+  id: number;
+  name: string;
+  city: string;
+  state: string;
+  address: string;
+  featured_image: string;
+  price_from: string;
+  price_currency: string;
+  property_type: string;
+  is_featured: boolean;
+  rating_average: string;
+  seo_slug: string;
+}
+
+function mapPropertyType(
+  type: string
+): "HOTEL" | "ENTIRE CONDO" | "APARTMENT" | "VILLA" {
+  const map: Record<string, "HOTEL" | "ENTIRE CONDO" | "APARTMENT" | "VILLA"> =
+    {
+      hotel: "HOTEL",
+      condo: "ENTIRE CONDO",
+      apartment: "APARTMENT",
+      villa: "VILLA",
+      cabin: "VILLA",
+      cottage: "VILLA",
+      house: "VILLA",
+      loft: "APARTMENT",
+    };
+  return map[type?.toLowerCase()] ?? "HOTEL";
+}
+
+async function getFeaturedProperties(): Promise<Property[]> {
+  try {
+    const res = await fetch(
+      "https://pickpackgo.in-sourceit.com/api/public/properties/featured?limit=4",
+      { next: { revalidate: 3600 } }
+    );
+    const json = await res.json();
+    return json.success ? json.data : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getTopRatedProperties(): Promise<Property[]> {
+  try {
+    const res = await fetch(
+      "https://pickpackgo.in-sourceit.com/api/public/properties/top-rated?limit=4",
+      { next: { revalidate: 3600 } }
+    );
+    const json = await res.json();
+    return json.success ? json.data : [];
+  } catch {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const [featuredProperties, topRatedProperties] = await Promise.all([
+    getFeaturedProperties(),
+    getTopRatedProperties(),
+  ]);
+
   return (
     <>
       <main className="relative w-full min-h-screen ">
@@ -70,7 +134,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      
+
 
       <section className="py-20 bg-white">
         <div className="global-container">
@@ -97,7 +161,7 @@ export default function Home() {
             <div className="grid 2xl:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-6 items-center justify-between">
               {destinations?.map((destination, index) => {
                 return (
-                  <div>
+                  <div key={index}>
                     <DestinationCard
                       image={destination.image}
                       city={destination.city}
@@ -183,47 +247,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Properties */}
       <section className="py-20 bg-[#F8FAFC]">
         <div className="global-container">
-          <div className="grid md:grid-cols-1 grid-cols-1 gap-4 items-center justify-between">
-            <div className="text-center">
+          <div className="text-center">
+            <h2 className="text-[#0d1637] md:text-3xl text-xl font-extrabold">
+              Hotels + Vacation Rentals — Together in One Search
+            </h2>
+            <p className="text-[#64748B] md:text-xl text-base font-light mt-3">
+              Compare before you book. See a luxury hotel and a private villa
+              on the same map, with the same search.
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <div className="grid 2xl:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-8 items-center justify-between">
+              {featuredProperties.map((property) => (
+                <Link key={property.id} href={`/property-listing/${property.id}`}>
+                  <VacationCard
+                    image={property.featured_image}
+                    title={property.name}
+                    location={`${property.city}, ${property.state}`}
+                    distance={property.address}
+                    price={parseFloat(property.price_from)}
+                    type={mapPropertyType(property.property_type)}
+                    badge={property.is_featured ? "Featured" : undefined}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Top Rated Properties */}
+      <section className="py-20 bg-white">
+        <div className="global-container">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4 items-center justify-between">
+            <div>
               <h2 className="text-[#0d1637] md:text-3xl text-xl font-extrabold">
-                Hotels + Vacation Rentals — Together in One Search
+                Top Rated Properties
               </h2>
               <p className="text-[#64748B] md:text-xl text-base font-light mt-3">
-                Compare before you book. See a luxury hotel and a private villa
-                on the same map, with the same search.
+                Handpicked stays loved by our guests. Highest-rated properties
+                across every category.
               </p>
+            </div>
+            <div className="text-right">
+              <Link
+                href="/property-listing"
+                className="flex gap-2.5 justify-end items-center text-[#16A34A] font-bold md:text-xl text-base"
+              >
+                View all properties
+                <RightIconGreen />
+              </Link>
             </div>
           </div>
 
           <div className="mt-8">
             <div className="grid 2xl:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-8 items-center justify-between">
-              {vacationRentals?.map((vacationRental, index) => {
-                return (
-                  <div>
-                    <VacationCard
-                      image={vacationRental.image}
-                      title={vacationRental.title}
-                      location={vacationRental.location}
-                      distance={vacationRental.distance}
-                      price={vacationRental.price}
-                      type={
-                        vacationRental.type as
-                          | "HOTEL"
-                          | "ENTIRE CONDO"
-                          | "APARTMENT"
-                          | "VILLA"
-                      }
-                      badge={vacationRental.badge}
-                    />
-                  </div>
-                );
-              })}
+              {topRatedProperties.map((property) => (
+                <Link key={property.id} href={`/property-listing/${property.id}`}>
+                  <VacationCard
+                    image={property.featured_image}
+                    title={property.name}
+                    location={`${property.city}, ${property.state}`}
+                    distance={property.address}
+                    price={parseFloat(property.price_from)}
+                    type={mapPropertyType(property.property_type)}
+                    badge={
+                      parseFloat(property.rating_average) >= 4.8
+                        ? "Top Rated"
+                        : undefined
+                    }
+                  />
+                </Link>
+              ))}
             </div>
           </div>
         </div>
       </section>
+
       <section className="py-20 bg-[#fff] md:block hidden">
         <div className="global-container relative">
           <div className="relative">
@@ -249,7 +353,7 @@ export default function Home() {
             </div>
             <div className="py-3.5">
               <p className="text-[#DBEAFE] 2xl:text-xl md:text-base text-sm font-light">
-                Tell us where you want to go and what you love — we’ll build
+                Tell us where you want to go and what you love — we'll build
                 <span className="block">
                   your stay and activities automatically.
                 </span>
@@ -343,7 +447,7 @@ export default function Home() {
                 <span className="block">Corporate Partners</span>
               </h2>
               <p className="text-[#475569] 2xl:text-xl md:text-base text-sm font-light mt-4">
-                Use PikPakGo’s inventory under your own brand. Access our white-
+                Use PikPakGo's inventory under your own brand. Access our white-
                 <span className="2xl:block">
                   label portal to manage bookings, markups, and commissions in
                   one
@@ -440,7 +544,7 @@ export default function Home() {
           <Image src={Imag1} alt="SectionBG" className="w-full h-auto rounded-md" />
         </div>
           </div>
-   
+
       </section>
 
       <section className="py-28 bg-[#F8FAFC] relative">
@@ -453,8 +557,8 @@ export default function Home() {
             </div>
           </div>
           <div className="grid  md:grid-cols-4 grid-cols-1 gap-4  items-center justify-between">
-            {testimonials.map((testimonial) => (
-              <div className="mt-10">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="mt-10">
                 <TestimonialCard
                   rating={testimonial.rating}
                   testimonial={testimonial.testimonial}

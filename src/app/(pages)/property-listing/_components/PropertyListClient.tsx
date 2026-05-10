@@ -385,8 +385,8 @@ export default function PropertyListClient({ properties, total, initialParams }:
             </SelectContent>
           </Select>
         </div>
-          {/* Grid / List toggle */}
-          <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-gray-50">
+          {/* Grid / List toggle — desktop only */}
+          <div className="hidden md:flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-gray-50">
             <button
               type="button"
               onClick={() => setViewMode('list')}
@@ -417,20 +417,28 @@ export default function PropertyListClient({ properties, total, initialParams }:
         </div>
       </div>
 
-      {/* Cards */}
-      {viewMode === 'list' ? (
-        <div className="space-y-3">
-          {properties.map((p) => (
-            <ListCard key={p.id} p={p} />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-          {properties.map((p) => (
-            <GridCard key={p.id} p={p} />
-          ))}
-        </div>
-      )}
+      {/* Cards — mobile: always grid 2-col | desktop: based on viewMode */}
+      <div className="md:hidden grid grid-cols-2 gap-3">
+        {properties.map((p) => (
+          <GridCard key={p.id} p={p} />
+        ))}
+      </div>
+
+      <div className="hidden md:block">
+        {viewMode === 'list' ? (
+          <div className="space-y-3">
+            {properties.map((p) => (
+              <ListCard key={p.id} p={p} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {properties.map((p) => (
+              <GridCard key={p.id} p={p} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.pexels.com" },
       { protocol: "https", hostname: "media.istockphoto.com" },
       { protocol: "https", hostname: "pickpackgo.in-sourceit.com" },
+      { protocol: "https", hostname: "picsum.photos" },
     ],
   },
 };

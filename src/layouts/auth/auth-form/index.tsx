@@ -33,6 +33,7 @@ interface ModalAuthFormProps {
   mode: 'login' | 'signup';
   onSuccess?: () => void;
   onToggleMode?: () => void;
+  initialProfileType?: ProfileType;
 }
 
 type ProfileType = 'customer' | 'agency' | null;
@@ -130,10 +131,10 @@ const loginValidationSchema = Yup.object({
   password: Yup.string().required('Password is required'),
 });
 
-export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAuthFormProps) {
+export default function ModalAuthForm({ mode, onSuccess, onToggleMode, initialProfileType }: ModalAuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [profileType, setProfileType] = useState<ProfileType>(null);
+  const [profileType, setProfileType] = useState<ProfileType>(initialProfileType ?? null);
 
   const signupFormik = useFormik({
     initialValues: {
@@ -145,7 +146,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
       password: '',
       password_confirmation: '',
       agreeToTerms: false,
-      _profileType: '',
+      _profileType: initialProfileType ?? '',
       agency_name: '',
       tax_id: '',
       website: '',
@@ -314,7 +315,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
 
         {/* First Name + Last Name */}
         {mode === 'signup' && (
-          <div className="flex gap-2.5 items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div className="space-y-1 flex-1">
               <Label htmlFor="first_name" className="text-sm font-medium text-gray-700">
                 First Name <span className="text-red-500">*</span>
@@ -360,7 +361,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
         )}
 
         {/* Email + Phone */}
-        <div className={`${mode === 'signup' ? 'flex gap-2.5 items-start' : ''}`}>
+        <div className={`${mode === 'signup' ? 'grid grid-cols-1 sm:grid-cols-2 gap-2.5' : ''}`}>
           <div className="space-y-1 flex-1">
             <Label htmlFor="email" className="text-sm font-medium text-gray-700">
               Email Address <span className="text-red-500">*</span>
@@ -407,7 +408,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
         </div>
 
         {/* Country + Password */}
-        <div className={`${mode === 'signup' ? 'flex gap-2.5 items-start' : ''}`}>
+        <div className={`${mode === 'signup' ? 'grid grid-cols-1 sm:grid-cols-2 gap-2.5' : ''}`}>
           {mode === 'signup' && (
             <div className="space-y-1 flex-1">
               <Label htmlFor="country" className="text-sm font-medium text-gray-700">
@@ -522,8 +523,8 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
               )}
             </div>
 
-            <div className="flex gap-2.5 items-start">
-              <div className="space-y-1 flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="space-y-1">
                 <Label htmlFor="tax_id" className="text-sm font-medium text-gray-700">
                   Tax ID <span className="text-red-500">*</span>
                 </Label>
@@ -544,7 +545,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
                 )}
               </div>
 
-              <div className="space-y-1 flex-1">
+              <div className="space-y-1">
                 <Label htmlFor="website" className="text-sm font-medium text-gray-700">
                   Website <span className="text-red-500">*</span>
                 </Label>
@@ -656,23 +657,35 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode }: ModalAu
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="agreeToTerms"
-                checked={signupFormik.values.agreeToTerms}
-                onCheckedChange={(checked) => signupFormik.setFieldValue('agreeToTerms', checked)}
-                className="shrink-0 mt-0.5"
-              />
-              <Label htmlFor="agreeToTerms" className="text-sm text-gray-600 cursor-pointer leading-snug">
-                I agree to the{' '}
-                <Link href="/terms" className="text-emerald-600 hover:text-emerald-700 font-medium whitespace-nowrap">Terms of Service</Link>
-                {' '}and{' '}
-                <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700 font-medium whitespace-nowrap">Privacy Policy</Link>
-              </Label>
+            <div className={`rounded-xl border p-3.5 transition-colors ${
+              signupFormik.touched.agreeToTerms && signupFormik.errors.agreeToTerms
+                ? 'border-red-300 bg-red-50'
+                : signupFormik.values.agreeToTerms
+                ? 'border-emerald-300 bg-emerald-50'
+                : 'border-gray-200 bg-gray-50'
+            }`}>
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  id="agreeToTerms"
+                  checked={signupFormik.values.agreeToTerms}
+                  onCheckedChange={(checked) => signupFormik.setFieldValue('agreeToTerms', checked)}
+                  className="shrink-0 mt-0.5"
+                />
+                <Label htmlFor="agreeToTerms" className="text-sm text-gray-700 cursor-pointer leading-relaxed">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-emerald-600 hover:text-emerald-700 font-semibold underline underline-offset-2">
+                    Terms of Service
+                  </Link>
+                  {' '}and{' '}
+                  <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700 font-semibold underline underline-offset-2">
+                    Privacy Policy
+                  </Link>
+                </Label>
+              </div>
+              {signupFormik.touched.agreeToTerms && signupFormik.errors.agreeToTerms && (
+                <p className="text-xs text-red-500 mt-2 ml-7">{signupFormik.errors.agreeToTerms}</p>
+              )}
             </div>
-            {signupFormik.touched.agreeToTerms && signupFormik.errors.agreeToTerms && (
-              <p className="text-xs text-red-500">{signupFormik.errors.agreeToTerms}</p>
-            )}
           </>
         )}
 
