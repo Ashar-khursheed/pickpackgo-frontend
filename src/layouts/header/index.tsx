@@ -295,31 +295,31 @@
 
 "use client";
 
-import Image from "next/image";
-import React from "react";
-import Logo from "@/assets/logo.svg";
-import { navlink } from "@/utils/mock-data";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Menu,
-  X,
-  ChevronRight,
-  ChevronDown,
-  LogOut,
-  Settings,
-  Moon,
-  UserCircle2,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
 import BlackLogo from "@/assets/black-logo.svg";
+import Logo from "@/assets/logo.svg";
+import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
-import ModalAuthForm from "../auth/auth-form";
-import makeApiRequest from "@/network-request/axios";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 import { apiurl } from "@/network-request/apis";
+import makeApiRequest from "@/network-request/axios";
 import { notify } from "@/utils";
+import { navlink } from "@/utils/mock-data";
+import {
+  ChevronDown,
+  ChevronRight,
+  LogOut,
+  Menu,
+  Moon,
+  Settings,
+  UserCircle2,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
+import ModalAuthForm from "../auth/auth-form";
 const Header = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -373,7 +373,7 @@ const Header = () => {
     const savedUser = localStorage.getItem("user");
     if (savedToken) setToken(savedToken);
     if (savedUser) setUser(JSON.parse(savedUser));
-    setIsModal({ loginModal: false, signupModal: false });
+    setIsModal({ loginModal: false, signupModal: false, agencyModal: false });
   };
 
   const handleLogout = async () => {
@@ -768,7 +768,7 @@ const Header = () => {
           mode="login"
           onSuccess={handleAuthSuccess}
           onToggleMode={() =>
-            setIsModal({ loginModal: false, signupModal: true })
+            setIsModal({ loginModal: false, signupModal: true, agencyModal: false })
           }
         />
       </Modal>
@@ -784,7 +784,7 @@ const Header = () => {
           mode="signup"
           onSuccess={handleAuthSuccess}
           onToggleMode={() =>
-            setIsModal({ loginModal: true, signupModal: false })
+            setIsModal({ loginModal: true, signupModal: false, agencyModal: false })
           }
         />
       </Modal>
