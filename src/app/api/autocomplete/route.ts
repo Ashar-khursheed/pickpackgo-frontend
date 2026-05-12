@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(
-      `https://pickpackgo.in-sourceit.com/api/public/search/autocomplete?q=${encodeURIComponent(q)}&limit=${limit}`
+      `${process.env.NEXT_PUBLIC_API_BASE}/public/search/autocomplete?q=${encodeURIComponent(q)}&limit=${limit}`
     );
     const json = await res.json();
     return NextResponse.json(json);

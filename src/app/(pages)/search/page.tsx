@@ -4,7 +4,7 @@ import SearchBar from '@/components/search-bar';
 import SearchFiltersClient from './_components/SearchFiltersClient';
 import SearchResultsClient from './_components/SearchResultsClient';
 
-const API_BASE = 'https://pickpackgo.in-sourceit.com/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 
 export interface SearchProperty {
   id: number;
@@ -46,8 +46,11 @@ interface SearchResult {
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 async function searchHotels(params: Record<string, string>): Promise<SearchResult> {
+  const rawLocation = params.location || '';
+  const location = rawLocation.includes(',') ? rawLocation.split(',')[0].trim() : rawLocation;
+
   const payload: Record<string, string | number> = {
-    location: params.location || '',
+    location,
   };
   if (params.checkIn) payload.checkIn = params.checkIn;
   if (params.checkOut) payload.checkOut = params.checkOut;

@@ -1,13 +1,32 @@
 import axios from 'axios';
 
 export const apiurl = {
+  // Auth
   register: 'auth/register',
-  logout: 'auth/logout',
   login: 'auth/login',
+  logout: 'auth/logout',
   updateProfile: 'auth/profile',
+
+  // Properties
+  properties: 'public/properties',
+  propertyDetail: (id: number | string) => `public/properties/${id}`,
+  propertyFeatured: 'public/properties/featured',
+  propertyTopRated: 'public/properties/top-rated',
+  propertyCheckAvailability: (id: number | string) => `public/properties/${id}/check-availability`,
+
+  // Search
+  searchHotels: 'public/search/hotels',
+  searchAutocomplete: 'public/search/autocomplete',
+
+  // Blog
+  blogPosts: 'public/blog/posts',
+  blogPost: (slug: string) => `public/blog/posts/${slug}`,
+
+  // Newsletter
+  newsletterSubscribe: 'public/newsletter/subscribe',
 };
 
-const BLOG_BASE = 'https://pickpackgo.in-sourceit.com/api';
+const BLOG_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 
 export const blogApi = {
   async getPosts(perPage = 12) {

@@ -568,7 +568,7 @@ const Header = () => {
                   ) : (
                     <>
                       <Button
-                        className="text-[17px] font-medium bg-transparent hover:bg-white/10 text-white transition-colors border border-white/30"
+                        className={`text-[17px] font-medium ${!isHomePage ? 'text-[#fff]' : 'text-[#fff]'} hover:text-emerald-400 transition-colors`}
                         onClick={() =>
                           setIsModal({ ...isModal, loginModal: true })
                         }
@@ -576,7 +576,7 @@ const Header = () => {
                         Login
                       </Button>
                       <Button
-                        className="bg-emerald-600 text-white hover:bg-emerald-700 rounded-md px-6 shadow-lg shadow-emerald-600/20"
+                        className={`bg-emerald-600 text-white hover:bg-emerald-700 rounded-md px-6 shadow-lg shadow-emerald-600/20 ${!isHomePage ? 'text-[#fff]' : 'text-[#fff]'}`}
                         onClick={() =>
                           setIsModal({ ...isModal, signupModal: true })
                         }

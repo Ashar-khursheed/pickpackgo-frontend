@@ -3,17 +3,42 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, Twitter, Linkedin, Send } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import Logo from "@/assets/logo.svg";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
+
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle subscription logic here
-    console.log("Subscribing email:", email);
-    setEmail("");
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const res = await fetch(`${API_BASE}/public/newsletter/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "footer" }),
+      });
+      const json = await res.json();
+
+      if (res.ok && json.success !== false) {
+        setStatus("success");
+        setMessage(json.message || "You're subscribed! Thank you.");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setMessage(json.message || "Subscription failed. Please try again.");
+      }
+    } catch {
+      setStatus("error");
+      setMessage("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -165,19 +190,33 @@ export default function Footer() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setStatus("idle"); setMessage(""); }}
                 placeholder="Enter your email"
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500 transition-colors text-sm"
                 required
+                disabled={status === "loading"}
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+                disabled={status === "loading"}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 rounded-lg flex items-center justify-center transition-colors"
                 aria-label="Subscribe"
               >
-                <Send className="w-4 h-4 text-white" />
+                {status === "loading"
+                  ? <Loader2 className="w-4 h-4 text-white animate-spin" />
+                  : <Send className="w-4 h-4 text-white" />
+                }
               </button>
             </form>
+            {message && (
+              <p className={`mt-2 flex items-center gap-1.5 text-xs ${status === "success" ? "text-emerald-400" : "text-red-400"}`}>
+                {status === "success"
+                  ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  : <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                }
+                {message}
+              </p>
+            )}
           </div>
         </div>
 

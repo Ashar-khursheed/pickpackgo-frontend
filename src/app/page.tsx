@@ -62,7 +62,7 @@ function mapPropertyType(
 async function getFeaturedProperties(): Promise<Property[]> {
   try {
     const res = await fetch(
-      "https://pickpackgo.in-sourceit.com/api/public/properties/featured?limit=4",
+      `${process.env.NEXT_PUBLIC_API_BASE}/public/properties/featured?limit=4`,
       { next: { revalidate: 3600 } }
     );
     const json = await res.json();
@@ -75,7 +75,7 @@ async function getFeaturedProperties(): Promise<Property[]> {
 async function getTopRatedProperties(): Promise<Property[]> {
   try {
     const res = await fetch(
-      "https://pickpackgo.in-sourceit.com/api/public/properties/top-rated?limit=4",
+      `${process.env.NEXT_PUBLIC_API_BASE}/public/properties/top-rated?limit=4`,
       { next: { revalidate: 3600 } }
     );
     const json = await res.json();

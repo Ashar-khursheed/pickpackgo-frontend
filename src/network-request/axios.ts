@@ -353,7 +353,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 // Create Axios instance
 const axiosInstance = axios.create({
-  baseURL: "https://pickpackgo.in-sourceit.com/api/",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE,
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",

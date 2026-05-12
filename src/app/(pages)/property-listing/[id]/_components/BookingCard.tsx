@@ -1,22 +1,37 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, Calendar, Users, ShieldCheck } from 'lucide-react';
+import {
+  Star, Calendar, Users, ShieldCheck,
+  Loader2, CheckCircle2, XCircle, Baby,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
+
 interface Props {
+  propertyId: number;
   price: number | null;
   currency: string;
   rating: number | null;
   ratingCount: number;
 }
 
-export default function BookingCard({ price, currency, rating, ratingCount }: Props) {
+interface Availability {
+  available: boolean;
+  message: string;
+}
+
+export default function BookingCard({ propertyId, price, currency, rating, ratingCount }: Props) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState(2);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+
+  const [isChecking, setIsChecking] = useState(false);
+  const [availability, setAvailability] = useState<Availability | null>(null);
 
   const nights = (() => {
     if (!checkIn || !checkOut) return 0;
@@ -29,11 +44,47 @@ export default function BookingCard({ price, currency, rating, ratingCount }: Pr
   const serviceFee = 45;
   const total = subtotal ? subtotal + cleaningFee + serviceFee : null;
 
+  // Reset availability when any input changes
+  const resetAvailability = () => setAvailability(null);
+
+  async function checkAvailability() {
+    if (!checkIn || !checkOut) return;
+    setIsChecking(true);
+    setAvailability(null);
+    try {
+      const res = await fetch(
+        `${API_BASE}/public/properties/${propertyId}/check-availability`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            check_in: checkIn,
+            check_out: checkOut,
+            adults,
+            children,
+          }),
+        }
+      );
+      const json = await res.json();
+      setAvailability({
+        available: json.available ?? false,
+        message: json.message ?? (json.available ? 'Property is available' : 'Not available'),
+      });
+    } catch {
+      setAvailability({ available: false, message: 'Could not check availability. Please try again.' });
+    } finally {
+      setIsChecking(false);
+    }
+  }
+
+  const canCheck = checkIn && checkOut && nights > 0;
+
   return (
-    <div className="sticky top-6">
+    <div className="sticky top-32">
       <Card className="shadow-xl border-2">
         <CardContent className="p-6 space-y-5">
-          {/* Price */}
+
+          {/* Price + Rating */}
           <div className="flex items-baseline gap-2">
             {price ? (
               <>
@@ -69,7 +120,8 @@ export default function BookingCard({ price, currency, rating, ratingCount }: Pr
                 <input
                   type="date"
                   value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => { setCheckIn(e.target.value); resetAvailability(); }}
                   className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
                 />
               </div>
@@ -83,37 +135,94 @@ export default function BookingCard({ price, currency, rating, ratingCount }: Pr
                 <input
                   type="date"
                   value={checkOut}
-                  onChange={(e) => setCheckOut(e.target.value)}
+                  min={checkIn || new Date().toISOString().split('T')[0]}
+                  onChange={(e) => { setCheckOut(e.target.value); resetAvailability(); }}
                   className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
                 />
               </div>
             </div>
           </div>
 
-          {/* Guests */}
-          <div className="border border-gray-200 rounded-lg p-3">
-            <label className="text-xs font-semibold text-gray-700 uppercase block mb-1">
-              Guests
-            </label>
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-gray-400 shrink-0" />
-              <input
-                type="number"
-                value={guests}
-                onChange={(e) => setGuests(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
-                min="1"
-              />
+          {/* Adults + Children */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="border border-gray-200 rounded-lg p-3">
+              <label className="text-xs font-semibold text-gray-700 uppercase block mb-1">
+                Adults
+              </label>
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-400 shrink-0" />
+                <input
+                  type="number"
+                  value={adults}
+                  min="1"
+                  onChange={(e) => { setAdults(Math.max(1, parseInt(e.target.value) || 1)); resetAvailability(); }}
+                  className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
+                />
+              </div>
+            </div>
+            <div className="border border-gray-200 rounded-lg p-3">
+              <label className="text-xs font-semibold text-gray-700 uppercase block mb-1">
+                Children
+              </label>
+              <div className="flex items-center gap-2">
+                <Baby className="w-4 h-4 text-gray-400 shrink-0" />
+                <input
+                  type="number"
+                  value={children}
+                  min="0"
+                  onChange={(e) => { setChildren(Math.max(0, parseInt(e.target.value) || 0)); resetAvailability(); }}
+                  className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
+                />
+              </div>
             </div>
           </div>
 
-          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-base font-semibold">
+          {/* Check Availability button */}
+          <Button
+            type="button"
+            onClick={checkAvailability}
+            disabled={!canCheck || isChecking}
+            className="w-full h-11 text-sm font-semibold bg-[#0d1637] hover:bg-[#1a2755] text-white disabled:opacity-50"
+          >
+            {isChecking ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Checking availability...
+              </span>
+            ) : (
+              'Check Availability'
+            )}
+          </Button>
+
+          {/* Availability message */}
+          {availability && (
+            <div
+              className={`flex items-start gap-3 rounded-xl px-4 py-3 text-sm font-medium border ${
+                availability.available
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  : 'bg-red-50 border-red-200 text-red-800'
+              }`}
+            >
+              {availability.available ? (
+                <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
+              ) : (
+                <XCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
+              )}
+              <span>{availability.message}</span>
+            </div>
+          )}
+
+          {/* Reserve — only active when available */}
+          <Button
+            disabled={availability?.available !== true}
+            className="w-full h-12 text-base font-semibold bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-40"
+          >
             Reserve
           </Button>
 
           <p className="text-center text-sm text-gray-500">You won't be charged yet</p>
 
-          {/* Price breakdown — shown only when dates are selected */}
+          {/* Price breakdown */}
           {subtotal && (
             <>
               <Separator />

@@ -5,7 +5,7 @@ import PropertyFiltersClient from './_components/PropertyFiltersClient';
 import PropertyListClient from './_components/PropertyListClient';
 import MobileFilterSheet from './_components/MobileFilterSheet';
 
-const API_BASE = 'https://pickpackgo.in-sourceit.com/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 
 interface Property {
   id: number;
