@@ -112,37 +112,35 @@ export const testimonials = [
       'PikPakGo showed me both hotels and rentals in one search — no surprises at checkout! It saved me hours of switching tabs.',
     name: 'Sarah Jenkins',
     title: 'Verified Traveler',
-    image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60', 
+    image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2',
   },
-
+  {
+    id: 2,
+    rating: 5,
+    testimonial:
+      'Found a stunning villa in Bali at half the price I expected. The comparison view is a game-changer — I could see hotels vs. rentals side by side.',
+    name: 'James Thornton',
+    title: 'Digital Nomad',
+    image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2',
+  },
   {
     id: 3,
     rating: 5,
     testimonial:
-      'Best travel platform I have used. The search results are comprehensive and easy to compare.',
+      'Best travel platform I have used. The search results are comprehensive and easy to compare. Booked our family holiday in minutes!',
     name: 'Maria Garcia',
-    title: 'Frequent Flyer',
-    image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
-  },
-
-  {
-    id: 3,
-    rating: 4,
-    testimonial:
-      'Best travel platform I have used. The search results are comprehensive and easy to compare.',
-    name: 'Maria Garcia',
-    title: 'Frequent Flyer',
-    image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
+    title: 'Family Traveler',
+    image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2',
   },
   {
     id: 4,
     rating: 4,
     testimonial:
-      'I love how PikPakGo combines both flights and accommodations in one place. It made planning my trip so much easier!',
-    name: 'Liam O\'Connor',
+      'I love how PikPakGo combines flights and accommodations in one place. Planning my Tokyo trip was effortless — highly recommend!',
+    name: "Liam O'Connor",
     title: 'Adventure Seeker',
-    image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
-  }
+    image: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2',
+  },
 ];
 
 

@@ -263,6 +263,53 @@ img {
   }
 }
 
+/* ── Smooth scroll ─────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Skeleton loader ───────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* ── FAQ <details> accordion ──────────────────────────────── */
+details > summary::-webkit-details-marker { display: none; }
+details > summary { cursor: pointer; }
+details[open] > summary .faq-icon { transform: rotate(45deg); }
+
+/* ── Card hover lift ──────────────────────────────────────── */
+.card-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+}
+
+/* ── Mobile sticky booking CTA ────────────────────────────── */
+@media (max-width: 767px) {
+  .sticky-mobile-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+  }
+}
+
 /* Blog rich-text content */
 .blog-content h1,
 .blog-content h2,
