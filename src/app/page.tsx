@@ -60,10 +60,11 @@ function mapPropertyType(
 }
 
 async function getFeaturedProperties(): Promise<Property[]> {
+  if (!process.env.NEXT_PUBLIC_API_BASE) return [];
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/public/properties/featured?limit=4`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10000) }
     );
     const json = await res.json();
     return json.success ? json.data : [];
@@ -73,10 +74,11 @@ async function getFeaturedProperties(): Promise<Property[]> {
 }
 
 async function getTopRatedProperties(): Promise<Property[]> {
+  if (!process.env.NEXT_PUBLIC_API_BASE) return [];
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/public/properties/top-rated?limit=4`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10000) }
     );
     const json = await res.json();
     return json.success ? json.data : [];
