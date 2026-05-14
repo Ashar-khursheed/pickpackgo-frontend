@@ -25,6 +25,7 @@ import MobileBG from "@/assets/home/mobileBG.png";
 import BGOne from "@/assets/home/Background+Shadow.svg";
 import Imag1 from "@/assets/home/Section.svg";
 import Link from "next/link";
+import FaqAccordion from "@/components/faq-accordion";
 import {
   Shield,
   Tag,
@@ -103,12 +104,12 @@ async function getTopRatedProperties(): Promise<Property[]> {
 }
 
 const popularDestinations = [
-  { label: "Dubai", href: "/property-listing?city=Dubai" },
-  { label: "Bali", href: "/property-listing?city=Bali" },
-  { label: "Paris", href: "/property-listing?city=Paris" },
   { label: "New York", href: "/property-listing?city=New York" },
-  { label: "Tokyo", href: "/property-listing?city=Tokyo" },
-  { label: "London", href: "/property-listing?city=London" },
+  { label: "Los Angeles", href: "/property-listing?city=Los Angeles" },
+  { label: "Miami", href: "/property-listing?city=Miami" },
+  { label: "Las Vegas", href: "/property-listing?city=Las Vegas" },
+  { label: "Chicago", href: "/property-listing?city=Chicago" },
+  { label: "San Francisco", href: "/property-listing?city=San Francisco" },
 ];
 
 const categories = [
@@ -794,23 +795,7 @@ export default async function Home() {
                 </p>
               </div>
 
-              <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-                {faqs.map(({ q, a }) => (
-                  <details key={q} className="group bg-white">
-                    <summary className="flex items-center justify-between px-6 py-5 cursor-pointer list-none select-none">
-                      <span className="font-semibold text-[#0d1637] md:text-base text-sm pr-4">
-                        {q}
-                      </span>
-                      <span className="text-emerald-600 text-xl font-light shrink-0 transition-transform duration-300 group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    <div className="px-6 pb-5 text-[#475569] text-sm md:text-base leading-relaxed">
-                      {a}
-                    </div>
-                  </details>
-                ))}
-              </div>
+              <FaqAccordion faqs={faqs} />
             </div>
           </div>
         </section>
