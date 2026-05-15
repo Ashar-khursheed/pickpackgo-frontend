@@ -36,7 +36,7 @@ interface ModalAuthFormProps {
   initialProfileType?: ProfileType;
 }
 
-type ProfileType = 'customer' | 'agency' | null;
+type ProfileType = 'customer' | 'agency' | 'host' | null;
 
 const signupValidationSchema = Yup.object({
   first_name: Yup.string()
@@ -108,19 +108,19 @@ const signupValidationSchema = Yup.object({
   }),
 
   business_name: Yup.string().when('_profileType', {
-    is: 'agency',
+    is: 'host',
     then: (schema) => schema.required('Business name is required').min(2, 'Min 2 characters'),
     otherwise: (schema) => schema.notRequired(),
   }),
 
   business_registration_number: Yup.string().when('_profileType', {
-    is: 'agency',
+    is: 'host',
     then: (schema) => schema.required('Business registration number is required'),
     otherwise: (schema) => schema.notRequired(),
   }),
 
   bio: Yup.string().when('_profileType', {
-    is: 'agency',
+    is: 'host',
     then: (schema) => schema.required('Bio is required').min(10, 'Min 10 characters').max(500, 'Max 500 characters'),
     otherwise: (schema) => schema.notRequired(),
   }),
@@ -165,7 +165,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode, initialPr
           country: values.country.trim(),
           password: values.password,
           password_confirmation: values.password_confirmation,
-          user_type: `${profileType === 'agency' ? 'agency' : 'customer'}`,
+          user_type: profileType === 'agency' ? 'agency' : profileType === 'host' ? 'host' : 'customer',
         };
 
         if (profileType === 'agency') {
@@ -174,6 +174,9 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode, initialPr
             tax_id: values.tax_id.trim(),
             website: values.website.trim(),
           };
+        }
+
+        if (profileType === 'host') {
           payload.host_profile = {
             business_name: values.business_name.trim(),
             business_registration_number: values.business_registration_number.trim(),
@@ -307,7 +310,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode, initialPr
         <p className="text-gray-600 text-sm">
           {mode === 'login'
             ? 'Welcome back! Please login to your account.'
-            : `Creating ${profileType === 'agency' ? 'an Agency' : 'a Customer'} account`}
+            : `Creating ${profileType === 'agency' ? 'an Agency' : profileType === 'host' ? 'a Host' : 'a Customer'} account`}
         </p>
       </div>
 
@@ -567,10 +570,15 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode, initialPr
               </div>
             </div>
 
-            {/* Host Profile Fields */}
-            <div className="flex items-center gap-2 pb-1 border-b border-gray-100 mt-2">
+          </div>
+        )}
+
+        {/* Host Profile Fields */}
+        {mode === 'signup' && profileType === 'host' && (
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
               <Briefcase className="w-4 h-4 text-emerald-600" />
-              <h4 className="text-sm font-semibold text-gray-700">Host Profile</h4>
+              <h4 className="text-sm font-semibold text-gray-700">Host Details</h4>
             </div>
 
             <div className="space-y-1">

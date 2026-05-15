@@ -792,13 +792,13 @@ const Header = () => {
       <Modal
         isOpen={isModal.agencyModal}
         onClose={() => setIsModal({ ...isModal, agencyModal: false })}
-        title="Become a Host — Agency Registration"
+        title="Become a Host"
         width="max-w-[600px]"
         showFooter={false}
       >
         <ModalAuthForm
           mode="signup"
-          initialProfileType="agency"
+          initialProfileType="host"
           onSuccess={handleAuthSuccess}
           onToggleMode={() =>
             setIsModal({ ...isModal, agencyModal: false, loginModal: true })
