@@ -165,7 +165,7 @@ export default function ModalAuthForm({ mode, onSuccess, onToggleMode, initialPr
           country: values.country.trim(),
           password: values.password,
           password_confirmation: values.password_confirmation,
-          user_type: 'customer',
+          user_type: `${profileType === 'agency' ? 'agency' : 'customer'}`,
         };
 
         if (profileType === 'agency') {
