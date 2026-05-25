@@ -344,6 +344,7 @@ function DashboardContent() {
                             name="preferred_currency"
                             value={formik.values.preferred_currency}
                             onChange={formik.handleChange}
+                            disabled
                             className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                           >
                             <option value="USD">USD — US Dollar</option>
@@ -363,6 +364,7 @@ function DashboardContent() {
                             name="preferred_language"
                             value={formik.values.preferred_language}
                             onChange={formik.handleChange}
+                            disabled
                             className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                           >
                             <option value="en">English</option>

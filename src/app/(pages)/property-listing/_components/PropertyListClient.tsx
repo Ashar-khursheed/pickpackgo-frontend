@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import WishlistButton from '@/components/wishlist-button';
 import { cn } from '@/lib/utils';
 import { Bath, BedDouble, LayoutGrid, LayoutList, MapPin, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -113,7 +114,7 @@ function ListCard({ p }: { p: Property }) {
     .map(formatAmenity);
 
   return (
-    <Link href={`/property-listing/${p.id}`} className="block group cursor-pointer">
+    <Link href={`/property-listing/${p.seo_slug ?? p.id}`} className="block group cursor-pointer">
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-emerald-300 transition-all duration-200">
         <div className="flex min-h-[160px]">
           {/* Image */}
@@ -131,6 +132,17 @@ function ListCard({ p }: { p: Property }) {
             <Badge className="absolute top-2 left-2 bg-black/70 text-white capitalize hover:bg-black/70 text-xs font-normal">
               {p.property_type}
             </Badge>
+            <WishlistButton
+              propertyCode={p.seo_slug ?? String(p.id)}
+              propertyName={name}
+              propertyType={p.property_type}
+              pricePerNight={p.display_price || (p.price_from ? parseFloat(p.price_from) : undefined)}
+              currency={p.price_currency}
+              imageUrl={p.featured_image}
+              seoSlug={p.seo_slug}
+              size="sm"
+              className="absolute top-2 right-2 z-10"
+            />
             {p.is_featured && (
               <Badge className="absolute bottom-2 left-2 bg-amber-500 text-white hover:bg-amber-500 text-xs">
                 ★ Featured
@@ -223,7 +235,7 @@ function GridCard({ p }: { p: Property }) {
   const ratingInfo = getRatingInfo(p.rating_average);
 
   return (
-    <Link href={`/property-listing/${p.id}`} className="block group cursor-pointer h-full">
+    <Link href={`/property-listing/${p.seo_slug ?? p.id}`} className="block group cursor-pointer h-full">
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-emerald-300 transition-all duration-200 flex flex-col h-full">
         <div className="relative h-48 shrink-0 overflow-hidden">
           <img
@@ -240,10 +252,21 @@ function GridCard({ p }: { p: Property }) {
             {p.property_type}
           </Badge>
           {p.is_featured && (
-            <Badge className="absolute top-2 right-2 bg-amber-500 text-white hover:bg-amber-500 text-xs">
+            <Badge className="absolute bottom-2 left-2 bg-amber-500 text-white hover:bg-amber-500 text-xs">
               ★ Featured
             </Badge>
           )}
+          <WishlistButton
+            propertyCode={p.seo_slug ?? String(p.id)}
+            propertyName={name}
+            propertyType={p.property_type}
+            pricePerNight={p.display_price || (p.price_from ? parseFloat(p.price_from) : undefined)}
+            currency={p.price_currency}
+            imageUrl={p.featured_image}
+            seoSlug={p.seo_slug}
+            size="sm"
+            className="absolute top-2 right-2 z-10"
+          />
         </div>
 
         <div className="p-3 flex flex-col flex-1">

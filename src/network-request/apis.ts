@@ -24,6 +24,11 @@ export const apiurl = {
 
   // Newsletter
   newsletterSubscribe: 'public/newsletter/subscribe',
+
+  // Wishlist
+  wishlist: 'wishlist',
+  wishlistCheck: (propertyCode: string) => `wishlist/check/${propertyCode}`,
+  wishlistRemove: (propertyCode: string) => `wishlist/${propertyCode}`,
 };
 
 const BLOG_BASE = process.env.NEXT_PUBLIC_API_BASE!;

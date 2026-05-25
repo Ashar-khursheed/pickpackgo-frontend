@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import { Heart, Star } from "lucide-react";
+import React from "react";
+import { Star } from "lucide-react";
+import WishlistButton from "@/components/wishlist-button";
 
 interface VacationCardProps {
   image: string;
@@ -13,6 +14,10 @@ interface VacationCardProps {
   rating?: number;
   reviewCount?: number;
   freeCancellation?: boolean;
+  propertyCode?: string;
+  propertyType?: string;
+  currency?: string;
+  seoSlug?: string;
 }
 
 const VacationCard: React.FC<VacationCardProps> = ({
@@ -26,9 +31,11 @@ const VacationCard: React.FC<VacationCardProps> = ({
   rating,
   reviewCount,
   freeCancellation,
+  propertyCode,
+  propertyType,
+  currency = 'USD',
+  seoSlug,
 }) => {
-  const [wishlisted, setWishlisted] = useState(false);
-
   return (
     <div className="group w-full max-w-162.5 cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
       <div className="relative h-64 rounded-2xl overflow-hidden mb-4">
@@ -39,21 +46,18 @@ const VacationCard: React.FC<VacationCardProps> = ({
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300" />
 
         {/* Wishlist button */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            setWishlisted((prev) => !prev);
-          }}
-          className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
-          aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
-        >
-          <Heart
-            className={`w-4 h-4 transition-colors ${
-              wishlisted ? "fill-red-500 text-red-500" : "text-gray-500"
-            }`}
+        {propertyCode && (
+          <WishlistButton
+            propertyCode={propertyCode}
+            propertyName={title}
+            propertyType={propertyType ?? type}
+            pricePerNight={price}
+            currency={currency}
+            imageUrl={image}
+            seoSlug={seoSlug}
+            className="absolute top-3 right-3 z-10"
           />
-        </button>
+        )}
 
         {badge && (
           <div className="absolute top-3 left-3">
@@ -63,7 +67,7 @@ const VacationCard: React.FC<VacationCardProps> = ({
           </div>
         )}
 
-        {/* Property Type Badge — moved to bottom-left */}
+        {/* Property Type Badge */}
         <div className="absolute bottom-3 left-3">
           <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold rounded-full shadow-md">
             {type}

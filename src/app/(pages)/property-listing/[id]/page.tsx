@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import PropertyGallery from './_components/PropertyGallery';
 import BookingCard from './_components/BookingCard';
+import WishlistButton from '@/components/wishlist-button';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 
@@ -69,9 +70,29 @@ interface PropertyDetail {
   api_data?: { bedrooms?: number; bathrooms?: number; max_occupancy?: number } | null;
 }
 
-async function fetchProperty(id: string): Promise<PropertyDetail | null> {
+async function fetchProperty(slugOrId: string): Promise<PropertyDetail | null> {
   try {
-    const res = await fetch(`${API_BASE}/public/properties/${id}`, {
+    // Pure numeric ID — fetch directly
+    if (/^\d+$/.test(slugOrId)) {
+      const res = await fetch(`${API_BASE}/public/properties/${slugOrId}`, {
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      return (json.data ?? null) as PropertyDetail | null;
+    }
+
+    // Slug — look up numeric ID via seo_slug query param, then fetch detail
+    const slugRes = await fetch(
+      `${API_BASE}/public/properties?seo_slug=${encodeURIComponent(slugOrId)}&per_page=1`,
+      { next: { revalidate: 60 } }
+    );
+    if (!slugRes.ok) return null;
+    const slugJson = await slugRes.json();
+    const items: { id: number }[] = slugJson.data?.data ?? [];
+    if (items.length === 0) return null;
+
+    const res = await fetch(`${API_BASE}/public/properties/${items[0].id}`, {
       next: { revalidate: 60 },
     });
     if (!res.ok) return null;
@@ -250,7 +271,20 @@ export default async function PropertyDetailPage({ params }: { params: Params })
                   )}
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-bold text-[#0d1637] mb-3">{name}</h1>
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <h1 className="text-2xl md:text-3xl font-bold text-[#0d1637]">{name}</h1>
+                  <WishlistButton
+                    propertyCode={property.seo_slug ?? String(property.id)}
+                    propertyName={name}
+                    propertyType={property.property_type}
+                    pricePerNight={price ?? undefined}
+                    currency={property.price_currency}
+                    imageUrl={property.featured_image}
+                    seoSlug={property.seo_slug}
+                    size="md"
+                    className="shrink-0 mt-1"
+                  />
+                </div>
 
                 {/* Star rating */}
                 {property.star_rating != null && (
