@@ -264,9 +264,17 @@ export default async function Home() {
 
                 {/* AI planner chip */}
                 <Link href="/trip-planner" className="block mx-auto md:w-[470px] w-full">
-                  <div className="flex items-center justify-center gap-2.5 text-white border text-[12px] border-white/30 rounded-full p-2 backdrop-blur-md bg-white/10 mt-5 hover:bg-white/20 transition-all cursor-pointer">
-                    <AIICon />
-                    Use AI Trip Planner <RightIcon /> Get personalized itineraries
+                  <div className="flex items-center justify-center gap-2.5 text-white border text-[12px] border-emerald-500/30 rounded-full p-2 backdrop-blur-md bg-emerald-500/10 mt-5 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 cursor-pointer shadow-lg shadow-emerald-500/5 group">
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <AIICon />
+                      Use AI Trip Planner
+                    </span>
+                    <span className="text-white/60">|</span>
+                    <span className="flex items-center gap-1 text-white/90">
+                      Get personalized itineraries
+                      <RightIcon />
+                    </span>
                   </div>
                 </Link>
               </div>
@@ -373,15 +381,15 @@ export default async function Home() {
                 ].map(({ icon: Icon, title, desc }) => (
                   <div
                     key={title}
-                    className="bg-[#F1F5F9] rounded-2xl px-6 py-7 2xl:py-14 md:py-10 text-center hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center gap-3"
+                    className="bg-gradient-to-b from-slate-50 to-slate-100/50 rounded-3xl p-8 text-center border border-slate-200/60 hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/[0.02] hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center gap-4 group"
                   >
-                    <div className="w-11 h-11 bg-white rounded-full shadow-md flex items-center justify-center">
+                    <div className="w-12 h-12 bg-white rounded-2xl shadow-md border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <Icon className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <h3 className="text-[#0F172A] font-semibold 2xl:text-2xl md:text-xl text-base">
+                    <h3 className="text-slate-900 font-bold text-lg md:text-xl">
                       {title}
                     </h3>
-                    <p className="text-[#64748B] 2xl:text-lg md:text-base text-sm font-light mt-2">
+                    <p className="text-slate-500 text-sm md:text-base leading-relaxed">
                       {desc}
                     </p>
                   </div>
@@ -417,15 +425,15 @@ export default async function Home() {
               {whyUs.map(({ icon: Icon, title, desc }) => (
                 <div
                   key={title}
-                  className="bg-white rounded-2xl p-6 flex flex-col items-center text-center gap-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                  className="bg-white rounded-3xl p-6 flex flex-col items-center text-center gap-4 border border-slate-100/80 shadow-xs hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 group"
                 >
-                  <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <Icon className="w-6 h-6 text-emerald-600" />
                   </div>
                   <h3 className="font-bold text-[#0d1637] md:text-lg text-base">
                     {title}
                   </h3>
-                  <p className="text-[#64748B] text-sm leading-relaxed">{desc}</p>
+                  <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
@@ -630,40 +638,51 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 grid-cols-1 gap-8 mt-10 ">
-              <div className="bg-[#FFEDD5] p-5 py-12 flex flex-col items-center justify-between gap-3.5 rounded-2xl">
-                <RewardIcon color="#EA580C" />
-                <h5 className="text-[#9A3412] md:text-xl text-base font-bold">
+            <div className="grid md:grid-cols-3 grid-cols-1 gap-8 mt-10">
+              {/* Bronze Card */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 p-8 py-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-orange-200/50 hover:shadow-xl hover:shadow-orange-500/[0.04] hover:-translate-y-1.5 transition-all duration-300">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-orange-100 flex items-center justify-center">
+                  <RewardIcon color="#EA580C" />
+                </div>
+                <h5 className="text-orange-950 md:text-xl text-base font-extrabold uppercase tracking-wider">
                   Bronze
                 </h5>
-                <h2 className="text-[#9A3412] md:text-4xl text-base font-extrabold">
+                <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600 md:text-5xl text-3xl font-extrabold">
                   3%
                 </h2>
-                <p className="text-[#9A3412] text-base font-light text-center">
+                <p className="text-orange-850/85 text-sm font-medium text-center leading-relaxed">
                   Cash back on every eligible booking
                 </p>
               </div>
-              <div className="bg-[#E2E8F0] p-5 py-12 flex flex-col items-center justify-between gap-3.5 rounded-2xl">
-                <RewardIcon color="#64748B" />
-                <h5 className="text-[#1E293B] md:text-xl text-base font-bold">
+
+              {/* Silver Card */}
+              <div className="bg-gradient-to-br from-slate-50 to-slate-200/50 p-8 py-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-slate-300/40 hover:shadow-xl hover:shadow-slate-500/[0.04] hover:-translate-y-1.5 transition-all duration-300">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center">
+                  <RewardIcon color="#64748B" />
+                </div>
+                <h5 className="text-slate-950 md:text-xl text-base font-extrabold uppercase tracking-wider">
                   Silver
                 </h5>
-                <h2 className="text-[#1E293B] md:text-4xl text-base font-extrabold">
+                <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-800 md:text-5xl text-3xl font-extrabold">
                   8%
                 </h2>
-                <p className="text-[#1E293B] text-base font-light text-center">
+                <p className="text-slate-800/85 text-sm font-medium text-center leading-relaxed">
                   Cash back on every eligible booking
                 </p>
               </div>
-              <div className="bg-[#FEF9C3] p-5 py-12 flex flex-col items-center justify-between gap-3.5 rounded-2xl">
-                <RewardIcon color="#CA8A04" />
-                <h5 className="text-[#854D0E] md:text-xl text-base font-bold">
+
+              {/* Gold Card */}
+              <div className="bg-gradient-to-br from-yellow-50 to-amber-100/60 p-8 py-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-amber-300/40 hover:shadow-xl hover:shadow-yellow-500/[0.04] hover:-translate-y-1.5 transition-all duration-300">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-amber-200 flex items-center justify-center">
+                  <RewardIcon color="#CA8A04" />
+                </div>
+                <h5 className="text-amber-950 md:text-xl text-base font-extrabold uppercase tracking-wider">
                   Gold
                 </h5>
-                <h2 className="text-[#854D0E] md:text-4xl text-base font-extrabold">
+                <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-yellow-600 md:text-5xl text-3xl font-extrabold">
                   13%
                 </h2>
-                <p className="text-[#854D0E] text-base font-light text-center">
+                <p className="text-amber-900/85 text-sm font-medium text-center leading-relaxed">
                   Cash back on every eligible booking
                 </p>
               </div>
