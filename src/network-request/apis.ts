@@ -29,6 +29,23 @@ export const apiurl = {
   wishlist: 'wishlist',
   wishlistCheck: (propertyCode: string) => `wishlist/check/${propertyCode}`,
   wishlistRemove: (propertyCode: string) => `wishlist/${propertyCode}`,
+
+  // Travel Verticals
+  flightsSearch: 'flights/search',
+  flightsBook: 'flights/book',
+  carsSearch: 'cars/search',
+  carsBook: 'cars/book',
+  experiencesSearch: 'experiences/search',
+  experiencesBook: 'experiences/book',
+  transfersSearch: 'transfers/search',
+  transfersBook: 'transfers/book',
+
+  // AI Trip Planner & Smart Cart
+  tripPlannerGenerate: 'trip-planner/generate',
+  tripPlannerItineraries: 'trip-planner/itineraries',
+  tripPlannerItineraryDetail: (id: number | string) => `trip-planner/itineraries/${id}`,
+  tripPlannerAddItem: (id: number | string) => `trip-planner/itineraries/${id}/add-item`,
+  tripPlannerCheckout: (id: number | string) => `trip-planner/itineraries/${id}/checkout`,
 };
 
 const BLOG_BASE = process.env.NEXT_PUBLIC_API_BASE!;

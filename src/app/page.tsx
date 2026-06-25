@@ -263,10 +263,12 @@ export default async function Home() {
                 </div>
 
                 {/* AI planner chip */}
-                <div className="flex items-center justify-center gap-2.5 text-white border text-[12px] border-white/30 rounded-full p-2 md:w-[470px] w-full mx-auto backdrop-blur-md bg-white/10 mt-5">
-                  <AIICon />
-                  Use AI Trip Planner <RightIcon /> Get personalized itineraries
-                </div>
+                <Link href="/trip-planner" className="block mx-auto md:w-[470px] w-full">
+                  <div className="flex items-center justify-center gap-2.5 text-white border text-[12px] border-white/30 rounded-full p-2 backdrop-blur-md bg-white/10 mt-5 hover:bg-white/20 transition-all cursor-pointer">
+                    <AIICon />
+                    Use AI Trip Planner <RightIcon /> Get personalized itineraries
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -596,12 +598,14 @@ export default async function Home() {
                 </p>
               </div>
               <div className="py-3.5">
-                <Button className="group bg-white hover:bg-white cursor-pointer text-[#16A34A] md:text-lg border border-[#CBD5E1] hover:text-[#16A34A] text-base font-medium h-13.75 rounded-md hover:shadow-xl transition-all duration-300 p-0">
-                  <span className="flex items-center gap-2.5 2xl:px-7.5 px-5">
-                    <span>Launch AI Trip Planner</span>
-                    <RightIconGreen />
-                  </span>
-                </Button>
+                <Link href="/trip-planner">
+                  <Button className="group bg-white hover:bg-white cursor-pointer text-[#16A34A] md:text-lg border border-[#CBD5E1] hover:text-[#16A34A] text-base font-medium h-13.75 rounded-md hover:shadow-xl transition-all duration-300 p-0">
+                    <span className="flex items-center gap-2.5 2xl:px-7.5 px-5">
+                      <span>Launch AI Trip Planner</span>
+                      <RightIconGreen />
+                    </span>
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

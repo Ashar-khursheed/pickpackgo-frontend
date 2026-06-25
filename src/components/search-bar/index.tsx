@@ -133,11 +133,9 @@ export default function SearchBar({
   const tabs = [
     { value: "all-stays", label: "All Stays", icon: Home },
     { value: "hotels", label: "Hotels", icon: Building2 },
-    // { value: "rentals", label: "Rentals", icon: Hotel },
-    // { value: "flights", label: "Flights", icon: Plane },
-    // { value: "car-rentals", label: "Car Rentals", icon: Car },
-    // { value: "bundles", label: "Bundles", icon: Package },
-    // { value: "experiences", label: "Experiences", icon: Sparkles },
+    { value: "flights", label: "Flights", icon: Plane },
+    { value: "car-rentals", label: "Car Rentals", icon: Car },
+    { value: "experiences", label: "Experiences", icon: Sparkles },
   ];
 
   const handleSearch = () => {
@@ -148,7 +146,16 @@ export default function SearchBar({
     if (checkIn) p.set("checkIn", format(checkIn, "yyyy-MM-dd"));
     if (checkOut) p.set("checkOut", format(checkOut, "yyyy-MM-dd"));
     p.set("guests", String(guests));
-    router.push(`/search?${p.toString()}`);
+    
+    if (activeTab === "flights") {
+      router.push(`/flights?${p.toString()}`);
+    } else if (activeTab === "car-rentals") {
+      router.push(`/cars?${p.toString()}`);
+    } else if (activeTab === "experiences") {
+      router.push(`/experiences?${p.toString()}`);
+    } else {
+      router.push(`/search?${p.toString()}`);
+    }
   };
 
   return (
