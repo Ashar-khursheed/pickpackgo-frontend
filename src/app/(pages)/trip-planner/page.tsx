@@ -84,6 +84,7 @@ function TripPlannerContent() {
   // Output State
   const [generating, setGenerating] = useState(false);
   const [itinerary, setItinerary] = useState<GeneratedItinerary | null>(null);
+  const [recommendedProperties, setRecommendedProperties] = useState<any[]>([]);
 
   // Saved state
   const [savedItineraryId, setSavedItineraryId] = useState<number | null>(null);
@@ -120,7 +121,32 @@ function TripPlannerContent() {
       });
 
       if (res.success) {
-        setItinerary(res.data);
+        const rawItinerary = res.itinerary;
+        const mappedDays = rawItinerary?.days?.map((d: any) => ({
+          day: d.day_number,
+          theme: d.theme,
+          activities: d.activities?.map((act: any) => ({
+            time: act.time,
+            title: act.title,
+            description: act.description,
+            cost: Number(act.estimated_cost_usd || 0),
+          })) || [],
+        })) || [];
+
+        const totalCost = mappedDays.reduce((total: number, d: any) => {
+          return total + d.activities.reduce((sum: number, act: any) => sum + (act.cost || 0), 0);
+        }, 0);
+
+        setItinerary({
+          destination: rawItinerary.destination,
+          duration_days: rawItinerary.days_count,
+          budget_level: budget,
+          estimated_cost: totalCost,
+          days: mappedDays,
+        });
+
+        setRecommendedProperties(res.recommended_properties || []);
+
         notify({
           message: "AI Trip Itinerary generated successfully!",
           type: "success",
@@ -427,52 +453,96 @@ function TripPlannerContent() {
                   </div>
                 </div>
 
-                {/* Stays & Transportation Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {itinerary.accommodation && (
-                    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs flex gap-4">
-                      <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 text-emerald-600">
-                        <Hotel className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">
-                          Recommended Stay
-                        </span>
-                        <h4 className="font-bold text-gray-900 leading-tight">
-                          {itinerary.accommodation.name}
-                        </h4>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {itinerary.accommodation.address}
-                        </p>
-                        <p className="text-sm font-semibold text-emerald-700 mt-2">
-                          ${itinerary.accommodation.price}/night
-                        </p>
-                      </div>
+                {/* Recommended Stays Section */}
+                {recommendedProperties.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
+                      <Hotel className="w-5 h-5 text-emerald-600" />
+                      Recommended Stays in {itinerary.destination}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {recommendedProperties.map((prop) => (
+                        <div
+                          key={prop.id}
+                          className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="relative h-48 bg-gray-100">
+                              {prop.images && prop.images[0] ? (
+                                <img
+                                  src={prop.images[0]}
+                                  alt={prop.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                  No Image Available
+                                </div>
+                              )}
+                              <div className="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                                <Sparkles className="w-3 h-3" />
+                                {prop.match_score ? `${(prop.match_score * 10).toFixed(0)}% Match` : "AI Choice"}
+                              </div>
+                            </div>
+                            <div className="p-5">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">
+                                  {prop.property_type || "Stay"}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  📍 {prop.city}
+                                </span>
+                              </div>
+                              <h4 className="font-bold text-gray-900 leading-tight text-base mb-1.5 line-clamp-2">
+                                {prop.name}
+                              </h4>
+                            </div>
+                          </div>
+                          
+                          <div className="px-5 pb-5">
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                              <div>
+                                <span className="text-xs text-gray-400 block font-medium">Starting from</span>
+                                <span className="text-lg font-extrabold text-emerald-600 font-sans">
+                                  {prop.price && Number(prop.price) > 0
+                                    ? `${prop.currency || "$"}${Number(prop.price).toFixed(0)}/night`
+                                    : "Price on request"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-0.5">
+                                {Array.from({ length: prop.star_rating || 5 }).map((_, i) => (
+                                  <span key={i} className="text-amber-400 text-sm">★</span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {itinerary.transportation && (
-                    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs flex gap-4">
-                      <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 text-emerald-600">
-                        <Car className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">
-                          Recommended Travel
-                        </span>
-                        <h4 className="font-bold text-gray-900 leading-tight capitalize">
-                          {itinerary.transportation.type}
-                        </h4>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Unified booking included in pricing plan.
-                        </p>
-                        <p className="text-sm font-semibold text-emerald-700 mt-2">
-                          ${itinerary.transportation.price} Est.
-                        </p>
-                      </div>
+                {itinerary.transportation && (
+                  <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs flex gap-4">
+                    <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 text-emerald-600">
+                      <Car className="w-6 h-6" />
                     </div>
-                  )}
-                </div>
+                    <div>
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">
+                        Recommended Travel
+                      </span>
+                      <h4 className="font-bold text-gray-900 leading-tight capitalize">
+                        {itinerary.transportation.type}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Unified booking included in pricing plan.
+                      </p>
+                      <p className="text-sm font-semibold text-emerald-700 mt-2 font-sans">
+                        ${itinerary.transportation.price} Est.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Day-by-Day view */}
                 <div className="space-y-4">
