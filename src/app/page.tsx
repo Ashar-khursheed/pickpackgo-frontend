@@ -362,25 +362,30 @@ export default async function Home() {
                   icon: Plane,
                   title: "Flights",
                   desc: "Best prices on global flights",
+                  href: "/flights",
                 },
                 {
                   icon: Building2,
                   title: "Hotels & Stays",
                   desc: "Luxury to budget accommodations",
+                  href: "/property-listing",
                 },
                 {
                   icon: Car,
                   title: "Car Rentals",
                   desc: "Flexible pickup & drop-off",
+                  href: "/cars",
                 },
                 {
                   icon: Compass,
                   title: "Experiences",
                   desc: "Tours, events & activities",
+                  href: "/experiences",
                 },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div
+              ].map(({ icon: Icon, title, desc, href }) => (
+                <Link
                   key={title}
+                  href={href}
                   className="bg-gradient-to-b from-slate-50 to-slate-100/50 rounded-3xl p-8 text-center border border-slate-200/60 hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/[0.02] hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center gap-4 group"
                 >
                   <div className="w-12 h-12 bg-white rounded-2xl shadow-md border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -392,14 +397,16 @@ export default async function Home() {
                   <p className="text-slate-500 text-sm md:text-base leading-relaxed">
                     {desc}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
 
             <div className="text-center">
-              <Button className="mt-10 bg-white hover:bg-green-700 cursor-pointer text-black md:text-lg border border-[#CBD5E1] hover:text-white text-base font-medium px-10 py-6 rounded-md hover:shadow-xl transition-all duration-300">
-                View All Services
-              </Button>
+              <Link href="/trip-planner">
+                <Button className="mt-10 bg-white hover:bg-green-700 cursor-pointer text-black md:text-lg border border-[#CBD5E1] hover:text-white text-base font-medium px-10 py-6 rounded-md hover:shadow-xl transition-all duration-300">
+                  View All Services
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
