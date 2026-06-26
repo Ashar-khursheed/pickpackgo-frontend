@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, X, Grid2x2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight, Grid2x2, X } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   images: string[];
@@ -21,9 +21,13 @@ export default function PropertyGallery({ images, name }: Props) {
     );
   }
 
-  const openModal = (i: number) => { setModalIndex(i); setIsModalOpen(true); };
+  const openModal = (i: number) => {
+    setModalIndex(i);
+    setIsModalOpen(true);
+  };
   const next = () => setModalIndex((i) => (i + 1) % images.length);
-  const prev = () => setModalIndex((i) => (i - 1 + images.length) % images.length);
+  const prev = () =>
+    setModalIndex((i) => (i - 1 + images.length) % images.length);
 
   // Right-side grid: up to 4 images starting from index 1
   const gridImages = images.slice(1, 5);
@@ -34,7 +38,6 @@ export default function PropertyGallery({ images, name }: Props) {
       {/* ── Gallery Grid ── */}
       <div className="bg-white">
         <div className="container mx-auto px-4 py-4">
-
           {/* Mobile: single image with arrows */}
           <div className="relative lg:hidden rounded-xl overflow-hidden h-64 bg-gray-100">
             <img
@@ -59,9 +62,10 @@ export default function PropertyGallery({ images, name }: Props) {
           </div>
 
           {/* Desktop: main + grid */}
-          <div className="hidden lg:grid gap-2 rounded-xl overflow-hidden"
+          <div
+            className="hidden lg:grid gap-2 rounded-xl overflow-hidden"
             style={{
-              gridTemplateColumns: gridImages.length > 0 ? '1fr 1fr' : '1fr',
+              gridTemplateColumns: gridImages.length > 0 ? "1fr 1fr" : "1fr",
               height: 480,
             }}
           >
@@ -82,8 +86,9 @@ export default function PropertyGallery({ images, name }: Props) {
               <div
                 className="grid gap-2"
                 style={{
-                  gridTemplateColumns: gridImages.length >= 2 ? '1fr 1fr' : '1fr',
-                  gridTemplateRows: gridImages.length >= 3 ? '1fr 1fr' : '1fr',
+                  gridTemplateColumns:
+                    gridImages.length >= 2 ? "1fr 1fr" : "1fr",
+                  gridTemplateRows: gridImages.length >= 3 ? "1fr 1fr" : "1fr",
                 }}
               >
                 {gridImages.map((img, i) => {
@@ -103,9 +108,14 @@ export default function PropertyGallery({ images, name }: Props) {
                       {isLast && (
                         <div
                           className="absolute inset-0 bg-black/50 flex items-center justify-center"
-                          onClick={(e) => { e.stopPropagation(); openModal(actualIndex); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(actualIndex);
+                          }}
                         >
-                          <span className="text-white font-semibold text-xl">+{remaining} more</span>
+                          <span className="text-white font-semibold text-xl">
+                            +{remaining} more
+                          </span>
                         </div>
                       )}
                     </div>
@@ -186,11 +196,17 @@ export default function PropertyGallery({ images, name }: Props) {
                   type="button"
                   onClick={() => setModalIndex(i)}
                   className={cn(
-                    'shrink-0 w-16 h-12 rounded-md overflow-hidden border-2 transition-all',
-                    i === modalIndex ? 'border-white opacity-100' : 'border-transparent opacity-50 hover:opacity-80'
+                    "shrink-0 w-16 h-12 rounded-md overflow-hidden border-2 transition-all",
+                    i === modalIndex
+                      ? "border-white opacity-100"
+                      : "border-transparent opacity-50 hover:opacity-80",
                   )}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={img}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>

@@ -1,4 +1,4 @@
-import Header from '@/layouts/header';
+import Header from "@/layouts/header";
 
 function CardSkeleton() {
   return (

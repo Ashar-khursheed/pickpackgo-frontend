@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
 import {
-  Star, Calendar, Users, ShieldCheck,
-  Loader2, CheckCircle2, XCircle, Baby,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+  Baby,
+  Calendar,
+  CheckCircle2,
+  Loader2,
+  ShieldCheck,
+  Star,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 
@@ -24,9 +30,15 @@ interface Availability {
   message: string;
 }
 
-export default function BookingCard({ propertyId, price, currency, rating, ratingCount }: Props) {
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+export default function BookingCard({
+  propertyId,
+  price,
+  currency,
+  rating,
+  ratingCount,
+}: Props) {
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
 
@@ -55,23 +67,28 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
       const res = await fetch(
         `${API_BASE}/public/properties/${propertyId}/check-availability`,
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             check_in: checkIn,
             check_out: checkOut,
             adults,
             children,
           }),
-        }
+        },
       );
       const json = await res.json();
       setAvailability({
         available: json.available ?? false,
-        message: json.message ?? (json.available ? 'Property is available' : 'Not available'),
+        message:
+          json.message ??
+          (json.available ? "Property is available" : "Not available"),
       });
     } catch {
-      setAvailability({ available: false, message: 'Could not check availability. Please try again.' });
+      setAvailability({
+        available: false,
+        message: "Could not check availability. Please try again.",
+      });
     } finally {
       setIsChecking(false);
     }
@@ -83,7 +100,6 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
     <div className="sticky top-32">
       <Card className="shadow-xl border-2">
         <CardContent className="p-6 space-y-5">
-
           {/* Price + Rating */}
           <div className="flex items-baseline gap-2">
             {price ? (
@@ -94,12 +110,16 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                 <span className="text-gray-500 text-sm">/ night</span>
               </>
             ) : (
-              <span className="text-lg font-semibold text-gray-600">Contact for pricing</span>
+              <span className="text-lg font-semibold text-gray-600">
+                Contact for pricing
+              </span>
             )}
             {rating !== null && (
               <div className="ml-auto flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-semibold text-sm">{rating.toFixed(1)}</span>
+                <span className="font-semibold text-sm">
+                  {rating.toFixed(1)}
+                </span>
                 {ratingCount > 0 && (
                   <span className="text-xs text-gray-400">({ratingCount})</span>
                 )}
@@ -120,8 +140,11 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                 <input
                   type="date"
                   value={checkIn}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => { setCheckIn(e.target.value); resetAvailability(); }}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    setCheckIn(e.target.value);
+                    resetAvailability();
+                  }}
                   className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
                 />
               </div>
@@ -135,8 +158,11 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                 <input
                   type="date"
                   value={checkOut}
-                  min={checkIn || new Date().toISOString().split('T')[0]}
-                  onChange={(e) => { setCheckOut(e.target.value); resetAvailability(); }}
+                  min={checkIn || new Date().toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    setCheckOut(e.target.value);
+                    resetAvailability();
+                  }}
                   className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
                 />
               </div>
@@ -155,7 +181,10 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                   type="number"
                   value={adults}
                   min="1"
-                  onChange={(e) => { setAdults(Math.max(1, parseInt(e.target.value) || 1)); resetAvailability(); }}
+                  onChange={(e) => {
+                    setAdults(Math.max(1, parseInt(e.target.value, 10) || 1));
+                    resetAvailability();
+                  }}
                   className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
                 />
               </div>
@@ -170,7 +199,10 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                   type="number"
                   value={children}
                   min="0"
-                  onChange={(e) => { setChildren(Math.max(0, parseInt(e.target.value) || 0)); resetAvailability(); }}
+                  onChange={(e) => {
+                    setChildren(Math.max(0, parseInt(e.target.value, 10) || 0));
+                    resetAvailability();
+                  }}
                   className="w-full text-sm focus:outline-none text-gray-700 bg-transparent"
                 />
               </div>
@@ -190,7 +222,7 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                 Checking availability...
               </span>
             ) : (
-              'Check Availability'
+              "Check Availability"
             )}
           </Button>
 
@@ -199,8 +231,8 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
             <div
               className={`flex items-start gap-3 rounded-xl px-4 py-3 text-sm font-medium border ${
                 availability.available
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                  : 'bg-red-50 border-red-200 text-red-800'
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                  : "bg-red-50 border-red-200 text-red-800"
               }`}
             >
               {availability.available ? (
@@ -220,7 +252,9 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
             Reserve
           </Button>
 
-          <p className="text-center text-sm text-gray-500">You won't be charged yet</p>
+          <p className="text-center text-sm text-gray-500">
+            You won't be charged yet
+          </p>
 
           {/* Price breakdown */}
           {subtotal && (
@@ -229,7 +263,8 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-gray-700">
                   <span>
-                    ${price?.toLocaleString()} × {nights} night{nights !== 1 ? 's' : ''}
+                    ${price?.toLocaleString()} × {nights} night
+                    {nights !== 1 ? "s" : ""}
                   </span>
                   <span>${subtotal.toLocaleString()}</span>
                 </div>
@@ -246,8 +281,10 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
                   <span>Total before taxes</span>
                   <span>${total?.toLocaleString()}</span>
                 </div>
-                {currency && currency !== 'USD' && (
-                  <p className="text-xs text-gray-400 text-center">Prices in {currency}</p>
+                {currency && currency !== "USD" && (
+                  <p className="text-xs text-gray-400 text-center">
+                    Prices in {currency}
+                  </p>
                 )}
               </div>
             </>
@@ -259,7 +296,9 @@ export default function BookingCard({ propertyId, price, currency, rating, ratin
         <div className="flex items-start gap-3">
           <ShieldCheck className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
           <div>
-            <h3 className="font-semibold text-emerald-900 text-sm mb-1">Safe & Secure Booking</h3>
+            <h3 className="font-semibold text-emerald-900 text-sm mb-1">
+              Safe & Secure Booking
+            </h3>
             <p className="text-xs text-emerald-700">
               Your payment information is protected with bank-level encryption
             </p>

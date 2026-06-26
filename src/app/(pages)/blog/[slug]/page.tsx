@@ -1,11 +1,19 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Calendar, Clock, ArrowLeft, Tag, Eye, ChevronRight, BookOpen } from 'lucide-react';
-import Header from '@/layouts/header';
-import { blogApi } from '@/network-request/apis';
-import ShareButtons from './ShareButtons';
+import {
+  ArrowLeft,
+  BookOpen,
+  Calendar,
+  ChevronRight,
+  Clock,
+  Eye,
+  Tag,
+} from "lucide-react";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import Header from "@/layouts/header";
+import { blogApi } from "@/network-request/apis";
+import ShareButtons from "./ShareButtons";
 
 export const revalidate = 3600;
 
@@ -33,7 +41,12 @@ interface BlogDetail {
   canonical_url: string | null;
   schema_markup: Record<string, unknown> | null;
   category: { id: number; name: string; slug: string; color: string };
-  author: { id: number; first_name: string; last_name: string; profile_image: string | null };
+  author: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_image: string | null;
+  };
   seo: {
     title: string;
     description: string;
@@ -68,51 +81,54 @@ export async function generateStaticParams() {
   return slugs.map((slug: string) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post: BlogDetail | null = await blogApi.getPost(slug);
-  if (!post) return { title: 'Post Not Found | PikPakGo Blog' };
+  if (!post) return { title: "Post Not Found | PikPakGo Blog" };
 
   const seo = post.seo;
 
   return {
     title: seo.title || post.title,
     description: seo.description || post.excerpt,
-    robots: seo.no_index ? 'noindex, nofollow' : 'index, follow',
+    robots: seo.no_index ? "noindex, nofollow" : "index, follow",
     alternates: {
-      canonical: seo.canonical || `https://pickpackgo.in-sourceit.com/blog/${slug}`,
+      canonical:
+        seo.canonical || `https://pickpackgo.in-sourceit.com/blog/${slug}`,
     },
     openGraph: {
       title: seo.og_title || post.title,
       description: seo.og_description || post.excerpt,
-      type: 'article',
+      type: "article",
       url: seo.canonical || `https://pickpackgo.in-sourceit.com/blog/${slug}`,
       publishedTime: post.published_at,
       authors: [`${post.author.first_name} ${post.author.last_name}`],
       ...(isValidUrl(seo.og_image)
         ? { images: [{ url: seo.og_image, alt: post.title }] }
         : isValidUrl(post.featured_image)
-        ? { images: [{ url: post.featured_image, alt: post.title }] }
-        : {}),
+          ? { images: [{ url: post.featured_image, alt: post.title }] }
+          : {}),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: seo.twitter_title || post.title,
       description: seo.twitter_description || post.excerpt,
       ...(isValidUrl(seo.twitter_image)
         ? { images: [seo.twitter_image] }
         : isValidUrl(post.featured_image)
-        ? { images: [post.featured_image] }
-        : {}),
+          ? { images: [post.featured_image] }
+          : {}),
     },
   };
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
@@ -122,7 +138,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   if (!post) notFound();
 
   // Fetch recommended articles
-  const allPosts = await blogApi.getPosts(6);
+  const allPosts: BlogDetail[] = await blogApi.getPosts(6);
   const recommended = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
   const schemaJson = post.seo?.schema ?? post.schema_markup;
@@ -159,11 +175,16 @@ export default async function BlogDetailPage({ params }: PageProps) {
           <div className="relative z-10 global-container">
             {/* Breadcrumb / Back Link */}
             <div className="mb-6 flex items-center gap-2 text-xs md:text-sm text-slate-400">
-              <Link href="/blog" className="hover:text-emerald-400 transition-colors">
+              <Link
+                href="/blog"
+                className="hover:text-emerald-400 transition-colors"
+              >
                 Blog
               </Link>
               <ChevronRight className="w-3.5 h-3.5" />
-              <span className="text-slate-300 truncate max-w-xs">{post.title}</span>
+              <span className="text-slate-300 truncate max-w-xs">
+                {post.title}
+              </span>
             </div>
 
             {/* Category badge */}
@@ -182,7 +203,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
             {/* Meta Row with glass cards */}
             <div className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-slate-300">
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1.5 rounded-full">
-                {post.author.profile_image && isValidUrl(post.author.profile_image) ? (
+                {post.author.profile_image &&
+                isValidUrl(post.author.profile_image) ? (
                   <div className="relative w-6 h-6 rounded-full overflow-hidden border border-white/20">
                     <Image
                       src={post.author.profile_image}
@@ -281,7 +303,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
             <aside className="lg:col-span-4 space-y-8">
               {/* About Author Card */}
               <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs flex flex-col items-center text-center">
-                {post.author.profile_image && isValidUrl(post.author.profile_image) ? (
+                {post.author.profile_image &&
+                isValidUrl(post.author.profile_image) ? (
                   <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-emerald-100 mb-4">
                     <Image
                       src={post.author.profile_image}
@@ -303,7 +326,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   Travel Writer & Expert
                 </p>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Sharing travel inspirations, accommodation guides, and local exploration secrets across the globe with PikPakGo.
+                  Sharing travel inspirations, accommodation guides, and local
+                  exploration secrets across the globe with PikPakGo.
                 </p>
               </div>
 
@@ -319,7 +343,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   </h3>
                   <div className="space-y-5">
                     {recommended.map((item) => (
-                      <Link key={item.id} href={`/blog/${item.slug}`} className="group block">
+                      <Link
+                        key={item.id}
+                        href={`/blog/${item.slug}`}
+                        className="group block"
+                      >
                         <div className="flex gap-3.5 items-start">
                           {isValidUrl(item.featured_image) && (
                             <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-100">
@@ -359,4 +387,3 @@ export default async function BlogDetailPage({ params }: PageProps) {
     </>
   );
 }
-

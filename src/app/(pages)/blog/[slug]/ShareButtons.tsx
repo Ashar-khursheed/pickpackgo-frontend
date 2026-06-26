@@ -1,13 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Share2, Link2, Check, Twitter, Facebook, Linkedin } from 'lucide-react';
+import {
+  Check,
+  Facebook,
+  Link2,
+  Linkedin,
+  Share2,
+  Twitter,
+} from "lucide-react";
+import { useState } from "react";
 
 export default function ShareButtons({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -15,9 +22,18 @@ export default function ShareButtons({ title }: { title: string }) {
   };
 
   const shareUrls = {
-    twitter: typeof window !== 'undefined' ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}` : '#',
-    facebook: typeof window !== 'undefined' ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` : '#',
-    linkedin: typeof window !== 'undefined' ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}` : '#',
+    twitter:
+      typeof window !== "undefined"
+        ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`
+        : "#",
+    facebook:
+      typeof window !== "undefined"
+        ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`
+        : "#",
+    linkedin:
+      typeof window !== "undefined"
+        ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`
+        : "#",
   };
 
   return (
@@ -59,7 +75,11 @@ export default function ShareButtons({ title }: { title: string }) {
           className="w-10 h-10 rounded-full bg-slate-50 hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center text-slate-500 transition-all duration-300 cursor-pointer border border-slate-100 hover:border-emerald-100 hover:scale-105 ml-auto"
           title="Copy Link"
         >
-          {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Link2 className="w-4 h-4" />}
+          {copied ? (
+            <Check className="w-4 h-4 text-emerald-600" />
+          ) : (
+            <Link2 className="w-4 h-4" />
+          )}
         </button>
       </div>
       {copied && (

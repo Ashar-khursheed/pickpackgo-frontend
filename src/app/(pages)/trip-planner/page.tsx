@@ -1,16 +1,26 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
-import Header from '@/layouts/header';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sparkles, Calendar, MapPin, DollarSign, Plus, Check, ShoppingCart, User, Plane, Hotel, Compass, Car } from 'lucide-react';
-import makeApiRequest from '@/network-request/axios';
-import { apiurl } from '@/network-request/apis';
-import { notify } from '@/utils';
+import {
+  Calendar,
+  Car,
+  Check,
+  Hotel,
+  MapPin,
+  Plus,
+  ShoppingCart,
+  Sparkles,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { Suspense, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import Header from "@/layouts/header";
+import { apiurl } from "@/network-request/apis";
+import makeApiRequest from "@/network-request/axios";
+import { notify } from "@/utils";
 
 interface ItineraryDay {
   day: number;
@@ -44,17 +54,17 @@ interface GeneratedItinerary {
 
 function TripPlannerContent() {
   const router = useRouter();
-  
+
   // Prompt State
-  const [destination, setDestination] = useState('');
+  const [destination, setDestination] = useState("");
   const [days, setDays] = useState(3);
-  const [budget, setBudget] = useState('moderate');
-  const [specialRequests, setSpecialRequests] = useState('');
-  
+  const [budget, setBudget] = useState("moderate");
+  const [specialRequests, setSpecialRequests] = useState("");
+
   // Output State
   const [generating, setGenerating] = useState(false);
   const [itinerary, setItinerary] = useState<GeneratedItinerary | null>(null);
-  
+
   // Saved state
   const [savedItineraryId, setSavedItineraryId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -63,13 +73,13 @@ function TripPlannerContent() {
   // Check login
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem('token'));
+    setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!destination.trim()) {
-      notify({ message: 'Please enter a destination', type: 'error' });
+      notify({ message: "Please enter a destination", type: "error" });
       return;
     }
 
@@ -79,7 +89,7 @@ function TripPlannerContent() {
 
     try {
       const res = await makeApiRequest(apiurl.tripPlannerGenerate, {
-        method: 'POST',
+        method: "POST",
         data: {
           destination,
           days,
@@ -90,7 +100,10 @@ function TripPlannerContent() {
 
       if (res.success) {
         setItinerary(res.data);
-        notify({ message: 'AI Trip Itinerary generated successfully!', type: 'success' });
+        notify({
+          message: "AI Trip Itinerary generated successfully!",
+          type: "success",
+        });
       }
     } catch {
       // handled by axial notify interceptor
@@ -104,13 +117,16 @@ function TripPlannerContent() {
     setSaving(true);
     try {
       const res = await makeApiRequest(apiurl.tripPlannerItineraries, {
-        method: 'POST',
+        method: "POST",
         data: itinerary,
       });
 
       if (res.success) {
         setSavedItineraryId(res.data.id);
-        notify({ message: 'Itinerary saved to your account!', type: 'success' });
+        notify({
+          message: "Itinerary saved to your account!",
+          type: "success",
+        });
       }
     } catch {
       // handled
@@ -121,19 +137,28 @@ function TripPlannerContent() {
 
   const handleCheckout = async () => {
     if (!savedItineraryId) {
-      notify({ message: 'Please save the itinerary first to checkout', type: 'error' });
+      notify({
+        message: "Please save the itinerary first to checkout",
+        type: "error",
+      });
       return;
     }
 
     setCheckingOut(true);
     try {
-      const res = await makeApiRequest(apiurl.tripPlannerCheckout(savedItineraryId), {
-        method: 'POST',
-      });
+      const res = await makeApiRequest(
+        apiurl.tripPlannerCheckout(savedItineraryId),
+        {
+          method: "POST",
+        },
+      );
 
       if (res.success) {
-        notify({ message: 'Checkout successful! All services have been booked.', type: 'success' });
-        router.push('/dashboard?tab=bookings');
+        notify({
+          message: "Checkout successful! All services have been booked.",
+          type: "success",
+        });
+        router.push("/dashboard?tab=bookings");
       }
     } catch {
       // handled
@@ -145,7 +170,7 @@ function TripPlannerContent() {
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       <Header />
-      
+
       {/* Premium Gradient Hero */}
       <div className="bg-linear-to-br from-[#0d1637] via-[#0b2545] to-[#134074] py-16 text-white text-center">
         <div className="global-container max-w-4xl px-4">
@@ -154,10 +179,13 @@ function TripPlannerContent() {
             AI Intelligence Powered
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-            Plan your next dream trip in <span className="text-emerald-400">seconds</span>
+            Plan your next dream trip in{" "}
+            <span className="text-emerald-400">seconds</span>
           </h1>
           <p className="text-blue-100 text-lg font-light max-w-2xl mx-auto">
-            Input where you want to go, and let our custom AI build a completely unified travel itinerary matching your budget, accommodation, and flights.
+            Input where you want to go, and let our custom AI build a completely
+            unified travel itinerary matching your budget, accommodation, and
+            flights.
           </p>
         </div>
       </div>
@@ -170,10 +198,12 @@ function TripPlannerContent() {
               <Sparkles className="w-5 h-5 text-emerald-600" />
               Customize Plan
             </h3>
-            
+
             <form onSubmit={handleGenerate} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="destination" className="text-gray-700">Where are you going?</Label>
+                <Label htmlFor="destination" className="text-gray-700">
+                  Where are you going?
+                </Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600" />
                   <Input
@@ -189,19 +219,23 @@ function TripPlannerContent() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="days" className="text-gray-700">Duration (days)</Label>
+                  <Label htmlFor="days" className="text-gray-700">
+                    Duration (days)
+                  </Label>
                   <Input
                     id="days"
                     type="number"
                     min={1}
                     max={14}
                     value={days}
-                    onChange={(e) => setDays(parseInt(e.target.value) || 3)}
+                    onChange={(e) => setDays(parseInt(e.target.value, 10) || 3)}
                     required
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="budget" className="text-gray-700">Budget Level</Label>
+                  <Label htmlFor="budget" className="text-gray-700">
+                    Budget Level
+                  </Label>
                   <select
                     id="budget"
                     value={budget}
@@ -216,7 +250,9 @@ function TripPlannerContent() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="requests" className="text-gray-700">Special Preferences</Label>
+                <Label htmlFor="requests" className="text-gray-700">
+                  Special Preferences
+                </Label>
                 <Textarea
                   id="requests"
                   placeholder="e.g. Vegetarian food, family friendly, beach activities, skip museums..."
@@ -255,8 +291,13 @@ function TripPlannerContent() {
                   <div className="absolute inset-0 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
                   <Sparkles className="absolute inset-0 m-auto w-6 h-6 text-emerald-600 animate-pulse" />
                 </div>
-                <h4 className="font-bold text-lg text-gray-900 mb-1">Creating Your Dream Adventure</h4>
-                <p className="text-gray-400 text-sm max-w-sm">We are consulting properties, flights, activities, and transport guides to build a unified custom trip plan.</p>
+                <h4 className="font-bold text-lg text-gray-900 mb-1">
+                  Creating Your Dream Adventure
+                </h4>
+                <p className="text-gray-400 text-sm max-w-sm">
+                  We are consulting properties, flights, activities, and
+                  transport guides to build a unified custom trip plan.
+                </p>
               </div>
             ) : itinerary ? (
               <div className="space-y-6">
@@ -264,18 +305,25 @@ function TripPlannerContent() {
                 <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
                     <div>
-                      <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider block mb-1">Generated Plan</span>
+                      <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider block mb-1">
+                        Generated Plan
+                      </span>
                       <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         {itinerary.destination}
                       </h2>
                       <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1 font-sans">
                         <Calendar className="w-4 h-4 text-emerald-600" />
-                        {itinerary.duration_days} Days · Budget: <span className="font-semibold text-emerald-700 capitalize">{itinerary.budget_level}</span>
+                        {itinerary.duration_days} Days · Budget:{" "}
+                        <span className="font-semibold text-emerald-700 capitalize">
+                          {itinerary.budget_level}
+                        </span>
                       </p>
                     </div>
 
                     <div className="text-left sm:text-right">
-                      <span className="text-xs text-gray-400 block font-medium">Estimated Package Cost</span>
+                      <span className="text-xs text-gray-400 block font-medium">
+                        Estimated Package Cost
+                      </span>
                       <span className="text-2xl font-extrabold text-emerald-600">
                         ${Number(itinerary.estimated_cost).toFixed(2)}
                       </span>
@@ -287,32 +335,44 @@ function TripPlannerContent() {
                     {isLoggedIn ? (
                       savedItineraryId ? (
                         <>
-                          <Button disabled className="bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                          <Button
+                            disabled
+                            className="bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200"
+                          >
                             <Check className="w-4 h-4 mr-2" /> Saved to Account
                           </Button>
-                          <Button 
+                          <Button
                             onClick={handleCheckout}
                             disabled={checkingOut}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer"
                           >
-                            <ShoppingCart className="w-4 h-4 mr-2" /> 
-                            {checkingOut ? 'Checking out...' : 'Checkout Unified Itinerary'}
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            {checkingOut
+                              ? "Checking out..."
+                              : "Checkout Unified Itinerary"}
                           </Button>
                         </>
                       ) : (
-                        <Button 
+                        <Button
                           onClick={handleSaveItinerary}
                           disabled={saving}
                           className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer"
                         >
                           <Plus className="w-4 h-4 mr-2" />
-                          {saving ? 'Saving...' : 'Save Itinerary & Checkout'}
+                          {saving ? "Saving..." : "Save Itinerary & Checkout"}
                         </Button>
                       )
                     ) : (
                       <div className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-3 w-full flex items-center justify-between">
-                        <span>Please log in to save this itinerary and purchase this unified travel package.</span>
-                        <Button size="sm" onClick={() => router.push('/login')} className="bg-amber-600 text-white hover:bg-amber-700 text-xs py-1 h-auto">
+                        <span>
+                          Please log in to save this itinerary and purchase this
+                          unified travel package.
+                        </span>
+                        <Button
+                          size="sm"
+                          onClick={() => router.push("/login")}
+                          className="bg-amber-600 text-white hover:bg-amber-700 text-xs py-1 h-auto"
+                        >
                           Log In
                         </Button>
                       </div>
@@ -328,10 +388,18 @@ function TripPlannerContent() {
                         <Hotel className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">Recommended Stay</span>
-                        <h4 className="font-bold text-gray-900 leading-tight">{itinerary.accommodation.name}</h4>
-                        <p className="text-xs text-gray-500 mt-1">{itinerary.accommodation.address}</p>
-                        <p className="text-sm font-semibold text-emerald-700 mt-2">${itinerary.accommodation.price}/night</p>
+                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">
+                          Recommended Stay
+                        </span>
+                        <h4 className="font-bold text-gray-900 leading-tight">
+                          {itinerary.accommodation.name}
+                        </h4>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {itinerary.accommodation.address}
+                        </p>
+                        <p className="text-sm font-semibold text-emerald-700 mt-2">
+                          ${itinerary.accommodation.price}/night
+                        </p>
                       </div>
                     </div>
                   )}
@@ -342,10 +410,18 @@ function TripPlannerContent() {
                         <Car className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">Recommended Travel</span>
-                        <h4 className="font-bold text-gray-900 leading-tight capitalize">{itinerary.transportation.type}</h4>
-                        <p className="text-xs text-gray-500 mt-1">Unified booking included in pricing plan.</p>
-                        <p className="text-sm font-semibold text-emerald-700 mt-2">${itinerary.transportation.price} Est.</p>
+                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-0.5">
+                          Recommended Travel
+                        </span>
+                        <h4 className="font-bold text-gray-900 leading-tight capitalize">
+                          {itinerary.transportation.type}
+                        </h4>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Unified booking included in pricing plan.
+                        </p>
+                        <p className="text-sm font-semibold text-emerald-700 mt-2">
+                          ${itinerary.transportation.price} Est.
+                        </p>
                       </div>
                     </div>
                   )}
@@ -353,37 +429,52 @@ function TripPlannerContent() {
 
                 {/* Day-by-Day view */}
                 <div className="space-y-4">
-                  <h3 className="font-bold text-lg text-gray-900">Day-by-Day Itinerary Schedule</h3>
-                  
+                  <h3 className="font-bold text-lg text-gray-900">
+                    Day-by-Day Itinerary Schedule
+                  </h3>
+
                   {itinerary.days.map((day) => (
-                    <div key={day.day} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
+                    <div
+                      key={day.day}
+                      className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs"
+                    >
                       <div className="flex items-center gap-3 border-b border-gray-100 pb-3 mb-4">
                         <div className="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center">
                           {day.day}
                         </div>
-                        <h4 className="font-bold text-gray-900 text-base">Day {day.day} Schedule</h4>
+                        <h4 className="font-bold text-gray-900 text-base">
+                          Day {day.day} Schedule
+                        </h4>
                       </div>
 
                       <div className="space-y-4">
                         {day.activities.map((act, actIdx) => (
-                          <div key={actIdx} className="relative pl-6 border-l-2 border-emerald-500/20 last:border-0 pb-2">
+                          <div
+                            key={actIdx}
+                            className="relative pl-6 border-l-2 border-emerald-500/20 last:border-0 pb-2"
+                          >
                             <div className="absolute left-[-5px] top-1.5 w-2 h-2 rounded-full bg-emerald-600" />
                             <div className="flex justify-between items-start gap-4">
                               <div>
                                 <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wider">
                                   {act.time}
                                 </span>
-                                <h5 className="font-semibold text-gray-900 mt-1.5">{act.title}</h5>
-                                <p className="text-xs text-gray-500 mt-1 leading-relaxed font-light">{act.description}</p>
+                                <h5 className="font-semibold text-gray-900 mt-1.5">
+                                  {act.title}
+                                </h5>
+                                <p className="text-xs text-gray-500 mt-1 leading-relaxed font-light">
+                                  {act.description}
+                                </p>
                                 {act.location && (
                                   <span className="text-[10px] text-gray-400 flex items-center gap-1 mt-1 font-medium">
-                                    <MapPin className="w-3 h-3 text-emerald-600" /> {act.location}
+                                    <MapPin className="w-3 h-3 text-emerald-600" />{" "}
+                                    {act.location}
                                   </span>
                                 )}
                               </div>
                               {act.cost !== undefined && (
                                 <span className="text-sm font-semibold text-gray-900 shrink-0">
-                                  {act.cost === 0 ? 'Free' : `$${act.cost}`}
+                                  {act.cost === 0 ? "Free" : `$${act.cost}`}
                                 </span>
                               )}
                             </div>
@@ -399,8 +490,13 @@ function TripPlannerContent() {
                 <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
                   <Sparkles className="w-8 h-8" />
                 </div>
-                <h4 className="font-bold text-lg text-gray-900 mb-1">AI Trip Planner Output</h4>
-                <p className="text-gray-400 text-sm max-w-sm">Use the left panel to configure your destination, duration and budget, then click Generate to construct an itinerary.</p>
+                <h4 className="font-bold text-lg text-gray-900 mb-1">
+                  AI Trip Planner Output
+                </h4>
+                <p className="text-gray-400 text-sm max-w-sm">
+                  Use the left panel to configure your destination, duration and
+                  budget, then click Generate to construct an itinerary.
+                </p>
               </div>
             )}
           </div>
@@ -412,11 +508,13 @@ function TripPlannerContent() {
 
 export default function TripPlannerPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <TripPlannerContent />
     </Suspense>
   );

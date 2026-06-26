@@ -1,24 +1,24 @@
-import type { Metadata } from 'next';
-import Header from '@/layouts/header';
-import { blogApi } from '@/network-request/apis';
-import BlogList from './BlogList';
+import type { Metadata } from "next";
+import Header from "@/layouts/header";
+import { blogApi } from "@/network-request/apis";
+import BlogList from "./BlogList";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Travel Blog | PikPakGo — Tips, Guides & Destinations',
+  title: "Travel Blog | PikPakGo — Tips, Guides & Destinations",
   description:
-    'Explore travel guides, destination tips, and expert advice from the PikPakGo blog. Stay inspired for your next adventure.',
+    "Explore travel guides, destination tips, and expert advice from the PikPakGo blog. Stay inspired for your next adventure.",
   openGraph: {
-    title: 'Travel Blog | PikPakGo',
-    description: 'Explore travel guides, destination tips, and expert advice.',
-    type: 'website',
-    url: 'https://pickpackgo.in-sourceit.com/blog',
+    title: "Travel Blog | PikPakGo",
+    description: "Explore travel guides, destination tips, and expert advice.",
+    type: "website",
+    url: "https://pickpackgo.in-sourceit.com/blog",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Travel Blog | PikPakGo',
-    description: 'Explore travel guides, destination tips, and expert advice.',
+    card: "summary_large_image",
+    title: "Travel Blog | PikPakGo",
+    description: "Explore travel guides, destination tips, and expert advice.",
   },
 };
 
@@ -34,7 +34,12 @@ interface BlogPost {
   is_featured: boolean;
   view_count: number;
   category: { id: number; name: string; slug: string; color: string };
-  author: { id: number; first_name: string; last_name: string; profile_image: string | null };
+  author: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_image: string | null;
+  };
 }
 
 export default async function BlogPage() {
@@ -59,13 +64,14 @@ export default async function BlogPage() {
               Our Travel Blog
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight leading-none">
-              Stories, Tips &amp;{' '}
+              Stories, Tips &amp;{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
                 Inspiration
               </span>
             </h1>
             <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-              Discover expert destination guides, local secrets, and travel hacks to make your next journey with PikPakGo unforgettable.
+              Discover expert destination guides, local secrets, and travel
+              hacks to make your next journey with PikPakGo unforgettable.
             </p>
           </div>
         </section>
@@ -78,4 +84,3 @@ export default async function BlogPage() {
     </>
   );
 }
-

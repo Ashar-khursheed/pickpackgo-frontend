@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { SlidersHorizontal } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { SlidersHorizontal } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 interface Props {
   initialParams: Record<string, string>;
@@ -22,45 +22,65 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [location, setLocation] = useState(initialParams.location ?? '');
-  const [city, setCity] = useState(initialParams.city ?? '');
-  const [propertyType, setPropertyType] = useState(initialParams.property_type ?? '');
-  const [minPrice, setMinPrice] = useState(initialParams.min_price ?? '');
-  const [maxPrice, setMaxPrice] = useState(initialParams.max_price ?? '');
-  const [bedrooms, setBedrooms] = useState(initialParams.bedrooms ?? '');
+  const [location, setLocation] = useState(initialParams.location ?? "");
+  const [city, setCity] = useState(initialParams.city ?? "");
+  const [propertyType, setPropertyType] = useState(
+    initialParams.property_type ?? "",
+  );
+  const [minPrice, setMinPrice] = useState(initialParams.min_price ?? "");
+  const [maxPrice, setMaxPrice] = useState(initialParams.max_price ?? "");
+  const [bedrooms, setBedrooms] = useState(initialParams.bedrooms ?? "");
 
   const applyFilters = useCallback(() => {
     const p = new URLSearchParams();
-    if (location) p.set('location', location);
-    if (city) p.set('city', city);
-    if (propertyType) p.set('property_type', propertyType);
-    if (minPrice) p.set('min_price', minPrice);
-    if (maxPrice) p.set('max_price', maxPrice);
-    if (bedrooms) p.set('bedrooms', bedrooms);
-    if (initialParams.sort_by) p.set('sort_by', initialParams.sort_by);
-    if (initialParams.min_rating) p.set('min_rating', initialParams.min_rating);
+    if (location) p.set("location", location);
+    if (city) p.set("city", city);
+    if (propertyType) p.set("property_type", propertyType);
+    if (minPrice) p.set("min_price", minPrice);
+    if (maxPrice) p.set("max_price", maxPrice);
+    if (bedrooms) p.set("bedrooms", bedrooms);
+    if (initialParams.sort_by) p.set("sort_by", initialParams.sort_by);
+    if (initialParams.min_rating) p.set("min_rating", initialParams.min_rating);
     router.push(`${pathname}?${p.toString()}`);
-  }, [location, city, propertyType, minPrice, maxPrice, bedrooms, initialParams, pathname, router]);
+  }, [
+    location,
+    city,
+    propertyType,
+    minPrice,
+    maxPrice,
+    bedrooms,
+    initialParams,
+    pathname,
+    router,
+  ]);
 
   const clearFilters = useCallback(() => {
-    setLocation('');
-    setCity('');
-    setPropertyType('');
-    setMinPrice('');
-    setMaxPrice('');
-    setBedrooms('');
+    setLocation("");
+    setCity("");
+    setPropertyType("");
+    setMinPrice("");
+    setMaxPrice("");
+    setBedrooms("");
     const p = new URLSearchParams();
-    if (initialParams.sort_by) p.set('sort_by', initialParams.sort_by);
-    if (initialParams.min_rating) p.set('min_rating', initialParams.min_rating);
-    router.push(`${pathname}${p.toString() ? `?${p.toString()}` : ''}`);
+    if (initialParams.sort_by) p.set("sort_by", initialParams.sort_by);
+    if (initialParams.min_rating) p.set("min_rating", initialParams.min_rating);
+    router.push(`${pathname}${p.toString() ? `?${p.toString()}` : ""}`);
   }, [initialParams, pathname, router]);
 
-  const hasActiveFilters = !!(location || city || propertyType || minPrice || maxPrice || bedrooms);
+  const hasActiveFilters = !!(
+    location ||
+    city ||
+    propertyType ||
+    minPrice ||
+    maxPrice ||
+    bedrooms
+  );
 
   const inputClass =
-    'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white transition-colors hover:border-gray-300';
+    "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white transition-colors hover:border-gray-300";
 
-  const triggerClass = 'w-full border-gray-200 text-sm hover:border-gray-300 focus:ring-emerald-500';
+  const triggerClass =
+    "w-full border-gray-200 text-sm hover:border-gray-300 focus:ring-emerald-500";
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -96,7 +116,7 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
+            onKeyDown={(e) => e.key === "Enter" && applyFilters()}
             placeholder="e.g. Beachfront, Downtown"
             className={inputClass}
           />
@@ -111,7 +131,7 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
+            onKeyDown={(e) => e.key === "Enter" && applyFilters()}
             placeholder="e.g. New York"
             className={inputClass}
           />
@@ -125,8 +145,8 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
             Property Type
           </label>
           <Select
-            value={propertyType || '__all'}
-            onValueChange={(v) => setPropertyType(v === '__all' ? '' : v)}
+            value={propertyType || "__all"}
+            onValueChange={(v) => setPropertyType(v === "__all" ? "" : v)}
           >
             <SelectTrigger className={triggerClass}>
               <SelectValue />
@@ -151,8 +171,10 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
         {/* Price Range */}
         <div>
           <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">
-            Price Range{' '}
-            <span className="text-gray-400 font-normal normal-case">(per night)</span>
+            Price Range{" "}
+            <span className="text-gray-400 font-normal normal-case">
+              (per night)
+            </span>
           </label>
           <div className="flex gap-2">
             <input
@@ -161,7 +183,7 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
               onChange={(e) => setMinPrice(e.target.value)}
               placeholder="Min $"
               min={0}
-              className={cn(inputClass, 'flex-1 w-0')}
+              className={cn(inputClass, "flex-1 w-0")}
             />
             <input
               type="number"
@@ -169,7 +191,7 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
               onChange={(e) => setMaxPrice(e.target.value)}
               placeholder="Max $"
               min={0}
-              className={cn(inputClass, 'flex-1 w-0')}
+              className={cn(inputClass, "flex-1 w-0")}
             />
           </div>
         </div>
@@ -182,8 +204,8 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
             Min Bedrooms
           </label>
           <Select
-            value={bedrooms || '__any'}
-            onValueChange={(v) => setBedrooms(v === '__any' ? '' : v)}
+            value={bedrooms || "__any"}
+            onValueChange={(v) => setBedrooms(v === "__any" ? "" : v)}
           >
             <SelectTrigger className={triggerClass}>
               <SelectValue />
@@ -208,7 +230,11 @@ export default function PropertyFiltersClient({ initialParams }: Props) {
             Apply Filters
           </Button>
           {hasActiveFilters && (
-            <Button onClick={clearFilters} variant="outline" className="w-full text-[#0d1637] border-[#0d1637] hover:bg-[#0d1637] hover:text-white">
+            <Button
+              onClick={clearFilters}
+              variant="outline"
+              className="w-full text-[#0d1637] border-[#0d1637] hover:bg-[#0d1637] hover:text-white"
+            >
               Clear All Filters
             </Button>
           )}

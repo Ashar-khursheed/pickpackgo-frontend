@@ -1,29 +1,31 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import {
-  Home,
   Building2,
-  Hotel,
-  Plane,
-  Car,
-  Package,
-  Sparkles,
-  MapPin,
   CalendarIcon,
-  Users,
-  Search,
+  Car,
+  Home,
+  MapPin,
   Minus,
+  Plane,
   Plus,
+  Search,
+  Sparkles,
+  Users,
 } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SearchBarProps {
   initialLocation?: string;
@@ -63,10 +65,10 @@ export default function SearchBar({
   const [activeTab, setActiveTab] = useState("all-stays");
   const [destination, setDestination] = useState(initialLocation);
   const [checkIn, setCheckIn] = useState<Date | undefined>(
-    initialCheckIn ? new Date(initialCheckIn) : undefined
+    initialCheckIn ? new Date(initialCheckIn) : undefined,
   );
   const [checkOut, setCheckOut] = useState<Date | undefined>(
-    initialCheckOut ? new Date(initialCheckOut) : undefined
+    initialCheckOut ? new Date(initialCheckOut) : undefined,
   );
   const [guests, setGuests] = useState(initialGuests);
   const [checkInOpen, setCheckInOpen] = useState(false);
@@ -88,7 +90,7 @@ export default function SearchBar({
     setLoadingSuggestions(true);
     try {
       const res = await fetch(
-        `/api/autocomplete?q=${encodeURIComponent(query)}&limit=7`
+        `/api/autocomplete?q=${encodeURIComponent(query)}&limit=7`,
       );
       const json = await res.json();
       if (json.success) {
@@ -122,7 +124,10 @@ export default function SearchBar({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -146,7 +151,7 @@ export default function SearchBar({
     if (checkIn) p.set("checkIn", format(checkIn, "yyyy-MM-dd"));
     if (checkOut) p.set("checkOut", format(checkOut, "yyyy-MM-dd"));
     p.set("guests", String(guests));
-    
+
     if (activeTab === "flights") {
       router.push(`/flights?${p.toString()}`);
     } else if (activeTab === "car-rentals") {
@@ -198,7 +203,9 @@ export default function SearchBar({
                     if (e.key === "Enter") handleSearch();
                     if (e.key === "Escape") setShowDropdown(false);
                   }}
-                  onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
+                  onFocus={() => {
+                    if (suggestions.length > 0) setShowDropdown(true);
+                  }}
                   className="pl-9 h-11 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm"
                   autoComplete="off"
                 />
@@ -206,9 +213,13 @@ export default function SearchBar({
                 {showDropdown && (
                   <div className="absolute w-[428px] top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden max-h-80 overflow-y-auto">
                     {loadingSuggestions ? (
-                      <div className="px-4 py-3 text-sm text-gray-500">Searching...</div>
+                      <div className="px-4 py-3 text-sm text-gray-500">
+                        Searching...
+                      </div>
                     ) : suggestions.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-gray-500">No results found</div>
+                      <div className="px-4 py-3 text-sm text-gray-500">
+                        No results found
+                      </div>
                     ) : (
                       suggestions.map((item, i) => {
                         if (item.type === "city") {
@@ -223,8 +234,12 @@ export default function SearchBar({
                                 <MapPin className="w-4 h-4 text-emerald-600" />
                               </div>
                               <div className="flex-1 min-w-0 cu">
-                                <p className="text-sm font-medium text-gray-900 truncate">{item.label}</p>
-                                <p className="text-xs text-gray-500">{item.property_count} properties</p>
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {item.label}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {item.property_count} properties
+                                </p>
                               </div>
                               <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
                                 City
@@ -249,12 +264,18 @@ export default function SearchBar({
                               />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">{item.label}</p>
-                              <p className="text-xs text-gray-500 truncate">{item.subtitle}</p>
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {item.label}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">
+                                {item.subtitle}
+                              </p>
                             </div>
                             <span className="text-xs font-semibold text-gray-700 shrink-0">
                               ${item.price_from}
-                              <span className="text-[10px] font-normal text-gray-400">/night</span>
+                              <span className="text-[10px] font-normal text-gray-400">
+                                /night
+                              </span>
                             </span>
                           </button>
                         );
@@ -278,7 +299,9 @@ export default function SearchBar({
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600 shrink-0" />
                     {checkIn ? (
-                      <span className="text-gray-800">{format(checkIn, "MMM d, yyyy")}</span>
+                      <span className="text-gray-800">
+                        {format(checkIn, "MMM d, yyyy")}
+                      </span>
                     ) : (
                       <span className="text-gray-400">Add date</span>
                     )}
@@ -288,7 +311,10 @@ export default function SearchBar({
                   <Calendar
                     mode="single"
                     selected={checkIn}
-                    onSelect={(d) => { setCheckIn(d); setCheckInOpen(false); }}
+                    onSelect={(d) => {
+                      setCheckIn(d);
+                      setCheckInOpen(false);
+                    }}
                     disabled={(d) => d < new Date()}
                     initialFocus
                   />
@@ -309,7 +335,9 @@ export default function SearchBar({
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600 shrink-0" />
                     {checkOut ? (
-                      <span className="text-gray-800">{format(checkOut, "MMM d, yyyy")}</span>
+                      <span className="text-gray-800">
+                        {format(checkOut, "MMM d, yyyy")}
+                      </span>
                     ) : (
                       <span className="text-gray-400">Add date</span>
                     )}
@@ -319,7 +347,10 @@ export default function SearchBar({
                   <Calendar
                     mode="single"
                     selected={checkOut}
-                    onSelect={(d) => { setCheckOut(d); setCheckOutOpen(false); }}
+                    onSelect={(d) => {
+                      setCheckOut(d);
+                      setCheckOutOpen(false);
+                    }}
                     disabled={(d) => d < (checkIn ?? new Date())}
                     initialFocus
                   />
@@ -339,14 +370,20 @@ export default function SearchBar({
                     className="w-full h-11 justify-start text-left font-normal border-gray-200 hover:border-emerald-500 text-sm"
                   >
                     <Users className="mr-2 h-4 w-4 text-emerald-600 shrink-0" />
-                    <span className="text-gray-800">{guests} {guests === 1 ? "guest" : "guests"}</span>
+                    <span className="text-gray-800">
+                      {guests} {guests === 1 ? "guest" : "guests"}
+                    </span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-56 z-200" align="start">
                   <div className="p-2">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Guests</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                      Guests
+                    </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-800">Adults</span>
+                      <span className="text-sm font-medium text-gray-800">
+                        Adults
+                      </span>
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => setGuests(Math.max(1, guests - 1))}
@@ -354,7 +391,9 @@ export default function SearchBar({
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="w-6 text-center font-semibold text-gray-900">{guests}</span>
+                        <span className="w-6 text-center font-semibold text-gray-900">
+                          {guests}
+                        </span>
                         <button
                           onClick={() => setGuests(guests + 1)}
                           className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-emerald-500 transition-colors"

@@ -295,16 +295,6 @@
 
 "use client";
 
-import BlackLogo from "@/assets/black-logo.svg";
-import Logo from "@/assets/logo.svg";
-import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/modal";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-import { apiurl } from "@/network-request/apis";
-import makeApiRequest from "@/network-request/axios";
-import { notify } from "@/utils";
-import { navlink } from "@/utils/mock-data";
 import {
   ChevronDown,
   ChevronRight,
@@ -319,7 +309,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import BlackLogo from "@/assets/black-logo.svg";
+import Logo from "@/assets/logo.svg";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { apiurl } from "@/network-request/apis";
+import makeApiRequest from "@/network-request/axios";
+import { notify } from "@/utils";
+import { navlink } from "@/utils/mock-data";
 import ModalAuthForm from "../auth/auth-form";
+
 const Header = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -428,7 +429,7 @@ const Header = () => {
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className={`text-[17px] font-medium ${isHomePage ? 'text-[#fff]' : 'text-[#0d1637]'} hover:text-emerald-400 transition-colors relative group`}
+                        className={`text-[17px] font-medium ${isHomePage ? "text-[#fff]" : "text-[#0d1637]"} hover:text-emerald-400 transition-colors relative group`}
                         // className="text-[17px] font-medium text-[#0d1637] hover:text-emerald-400 transition-colors relative group"
                       >
                         {link.name}
@@ -443,8 +444,10 @@ const Header = () => {
               <div className="hidden lg:flex items-center gap-6">
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={() => setIsModal({ ...isModal, agencyModal: true })}
-                    className={`text-[17px] font-normal ${isHomePage ? 'text-[#fff]' : 'text-[#0d1637]'} hover:text-emerald-400 transition-colors`}
+                    onClick={() =>
+                      setIsModal({ ...isModal, agencyModal: true })
+                    }
+                    className={`text-[17px] font-normal ${isHomePage ? "text-[#fff]" : "text-[#0d1637]"} hover:text-emerald-400 transition-colors`}
                   >
                     Become a Host
                   </button>
@@ -499,7 +502,10 @@ const Header = () => {
                           {/* Menu items */}
                           <div className="py-1">
                             <button
-                              onClick={() => { setDropdownOpen(false); router.push('/dashboard'); }}
+                              onClick={() => {
+                                setDropdownOpen(false);
+                                router.push("/dashboard");
+                              }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
                             >
                               <UserCircle2 className="w-4 h-4 text-gray-500" />
@@ -513,7 +519,10 @@ const Header = () => {
                               </div>
                             </button>
                             <button
-                              onClick={() => { setDropdownOpen(false); router.push('/dashboard?tab=settings'); }}
+                              onClick={() => {
+                                setDropdownOpen(false);
+                                router.push("/dashboard?tab=settings");
+                              }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
                             >
                               <Settings className="w-4 h-4 text-gray-500" />
@@ -568,7 +577,7 @@ const Header = () => {
                   ) : (
                     <>
                       <Button
-                        className={`text-[17px] font-medium ${!isHomePage ? 'text-[#fff]' : 'text-[#fff]'} hover:text-emerald-400 transition-colors`}
+                        className={`text-[17px] font-medium ${!isHomePage ? "text-[#fff]" : "text-[#fff]"} hover:text-emerald-400 transition-colors`}
                         onClick={() =>
                           setIsModal({ ...isModal, loginModal: true })
                         }
@@ -576,7 +585,7 @@ const Header = () => {
                         Login
                       </Button>
                       <Button
-                        className={`bg-emerald-600 text-white hover:bg-emerald-700 rounded-md px-6 shadow-lg shadow-emerald-600/20 ${!isHomePage ? 'text-[#fff]' : 'text-[#fff]'}`}
+                        className={`bg-emerald-600 text-white hover:bg-emerald-700 rounded-md px-6 shadow-lg shadow-emerald-600/20 ${!isHomePage ? "text-[#fff]" : "text-[#fff]"}`}
                         onClick={() =>
                           setIsModal({ ...isModal, signupModal: true })
                         }
@@ -599,7 +608,9 @@ const Header = () => {
                       {isOpen ? (
                         <X className="h-6 w-6 text-[#0d1637]" />
                       ) : (
-                        <Menu className={`h-6 w-6 ${isHomePage ? 'text-white' : 'text-[#0d1637]'}`}  />
+                        <Menu
+                          className={`h-6 w-6 ${isHomePage ? "text-white" : "text-[#0d1637]"}`}
+                        />
                       )}
                     </button>
                   </SheetTrigger>
@@ -647,7 +658,10 @@ const Header = () => {
                           ))}
                           <li className="pt-4">
                             <button
-                              onClick={() => { setIsOpen(false); setIsModal({ ...isModal, agencyModal: true }); }}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setIsModal({ ...isModal, agencyModal: true });
+                              }}
                               className="w-full flex items-center justify-between text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/5 transition-all group"
                             >
                               <span>Become a Host</span>
@@ -678,27 +692,39 @@ const Header = () => {
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                                <span className="text-emerald-400 text-xs font-medium">Online</span>
+                                <span className="text-emerald-400 text-xs font-medium">
+                                  Online
+                                </span>
                               </div>
                             </div>
 
                             {/* My Profile */}
                             <button
-                              onClick={() => { setIsOpen(false); router.push("/dashboard"); }}
+                              onClick={() => {
+                                setIsOpen(false);
+                                router.push("/dashboard");
+                              }}
                               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left"
                             >
                               <UserCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                              <span className="text-white text-sm font-medium flex-1">My Profile</span>
+                              <span className="text-white text-sm font-medium flex-1">
+                                My Profile
+                              </span>
                               <ChevronRight className="w-4 h-4 text-white/40" />
                             </button>
 
                             {/* Settings */}
                             <button
-                              onClick={() => { setIsOpen(false); router.push("/dashboard?tab=settings"); }}
+                              onClick={() => {
+                                setIsOpen(false);
+                                router.push("/dashboard?tab=settings");
+                              }}
                               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left"
                             >
                               <Settings className="w-5 h-5 text-emerald-400 shrink-0" />
-                              <span className="text-white text-sm font-medium flex-1">Settings</span>
+                              <span className="text-white text-sm font-medium flex-1">
+                                Settings
+                              </span>
                               <ChevronRight className="w-4 h-4 text-white/40" />
                             </button>
 
@@ -723,13 +749,19 @@ const Header = () => {
                             <Button
                               variant="outline"
                               className="w-full border-white/30 text-white bg-transparent hover:bg-white/10 h-12"
-                              onClick={() => { setIsOpen(false); setIsModal({ ...isModal, loginModal: true }); }}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setIsModal({ ...isModal, loginModal: true });
+                              }}
                             >
                               Login
                             </Button>
                             <Button
                               className="w-full bg-emerald-600 text-white hover:bg-emerald-700 h-12 shadow-lg shadow-emerald-600/20"
-                              onClick={() => { setIsOpen(false); setIsModal({ ...isModal, signupModal: true }); }}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setIsModal({ ...isModal, signupModal: true });
+                              }}
                             >
                               Sign Up
                             </Button>
@@ -768,7 +800,11 @@ const Header = () => {
           mode="login"
           onSuccess={handleAuthSuccess}
           onToggleMode={() =>
-            setIsModal({ loginModal: false, signupModal: true, agencyModal: false })
+            setIsModal({
+              loginModal: false,
+              signupModal: true,
+              agencyModal: false,
+            })
           }
         />
       </Modal>
@@ -784,7 +820,11 @@ const Header = () => {
           mode="signup"
           onSuccess={handleAuthSuccess}
           onToggleMode={() =>
-            setIsModal({ loginModal: true, signupModal: false, agencyModal: false })
+            setIsModal({
+              loginModal: true,
+              signupModal: false,
+              agencyModal: false,
+            })
           }
         />
       </Modal>

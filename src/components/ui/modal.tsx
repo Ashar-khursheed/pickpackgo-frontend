@@ -116,18 +116,17 @@
 // //   );
 // // }
 
-
 // // Modal.jsx
 // import { useEffect, useState } from 'react';
 // import ReactDOM from 'react-dom';
 
-// export const Modal = ({ 
-//   isOpen, 
-//   onClose, 
-//   title, 
-//   children, 
-//   showFooter, 
-//   width = "max-w-3xl" 
+// export const Modal = ({
+//   isOpen,
+//   onClose,
+//   title,
+//   children,
+//   showFooter,
+//   width = "max-w-3xl"
 // }) => {
 //   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -139,7 +138,7 @@
 //       setIsAnimating(false);
 //       document.body.style.overflow = 'unset';
 //     }
-    
+
 //     return () => {
 //       document.body.style.overflow = 'unset';
 //     };
@@ -152,7 +151,7 @@
 //         onClose();
 //       }
 //     };
-    
+
 //     window.addEventListener('keydown', handleEsc);
 //     return () => window.removeEventListener('keydown', handleEsc);
 //   }, [isOpen, onClose]);
@@ -162,16 +161,16 @@
 //   return ReactDOM.createPortal(
 //     <div className="fixed inset-0 z-[9999] overflow-y-auto">
 //       {/* Backdrop */}
-//       <div 
+//       <div
 //         className={`fixed inset-0 bg-black transition-opacity duration-300 ${
 //           isAnimating ? 'bg-opacity-50' : 'bg-opacity-0'
 //         }`}
 //         onClick={onClose}
 //       />
-      
+
 //       {/* Modal Content */}
 //       <div className="flex min-h-full items-center justify-center p-4 sm:p-6 lg:p-8">
-//         <div 
+//         <div
 //           className={`relative bg-white rounded-lg shadow-xl ${width} w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 ${
 //             isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
 //           }`}
@@ -188,12 +187,12 @@
 //               ×
 //             </button>
 //           </div>
-          
+
 //           {/* Body */}
 //           <div className="p-4 sm:p-6">
 //             {children}
 //           </div>
-          
+
 //           {/* Footer (optional) */}
 //           {showFooter && (
 //             <div className="sticky bottom-0 bg-white border-t p-4 sm:p-6">
@@ -209,9 +208,8 @@
 
 // Modal.jsx
 
-
-import { useEffect, useState, ReactNode } from 'react';
-import ReactDOM from 'react-dom';
+import { type ReactNode, useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -225,57 +223,57 @@ interface ModalProps {
   onConfirm?: () => void;
 }
 
-export const Modal = ({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children, 
+export const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  children,
   width = "max-w-3xl",
   footerBtnText,
   zIndex,
   showFooter = false,
-  onConfirm 
+  onConfirm,
 }: ModalProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       setIsAnimating(false);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
-    
+
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   // ESC key se close
   useEffect(() => {
-    const handleEsc = (e:any) => {
-      if (e.key === 'Escape' && isOpen) {
+    const handleEsc = (e: any) => {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, onClose]);
 
   if (!isOpen && !isAnimating) return null;
 
   return ReactDOM.createPortal(
-    <div 
+    <div
       className={`fixed inset-0  bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ${
-        zIndex === true ? 'z-[9999]' : 'z-50'
-      } ${isAnimating ? 'animate-fadeIn' : 'opacity-0'}`}
+        zIndex === true ? "z-[9999]" : "z-50"
+      } ${isAnimating ? "animate-fadeIn" : "opacity-0"}`}
     >
       {/* Modal Content */}
-      <div 
+      <div
         className={`bg-white rounded-md shadow-2xl ${width} w-full max-h-[90vh] overflow-hidden ${
-          isAnimating ? 'animate-slideUp' : 'opacity-0 translate-y-5'
+          isAnimating ? "animate-slideUp" : "opacity-0 translate-y-5"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -326,7 +324,7 @@ export const Modal = ({
               }}
               className="flex-1 bg-[#186737] text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-200"
             >
-              {footerBtnText || 'Confirm'}
+              {footerBtnText || "Confirm"}
             </button>
           </div>
         )}
@@ -363,6 +361,6 @@ export const Modal = ({
         }
       `}</style>
     </div>,
-    document.body
+    document.body,
   );
 };

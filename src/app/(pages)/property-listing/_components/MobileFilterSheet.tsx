@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { SlidersHorizontal } from 'lucide-react';
-import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
-import PropertyFiltersClient from './PropertyFiltersClient';
+import { SlidersHorizontal } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import PropertyFiltersClient from "./PropertyFiltersClient";
 
 interface Props {
   initialParams: Record<string, string>;
@@ -12,14 +12,18 @@ interface Props {
   activeFilterCount: number;
 }
 
-export default function MobileFilterSheet({ initialParams, hasFilters, activeFilterCount }: Props) {
+export default function MobileFilterSheet({
+  initialParams,
+  hasFilters,
+  activeFilterCount,
+}: Props) {
   const [open, setOpen] = useState(false);
-  const searchParams = useSearchParams();
+  const _searchParams = useSearchParams();
 
   // Auto-close when filters are applied (searchParams change)
   useEffect(() => {
     setOpen(false);
-  }, [searchParams]);
+  }, []);
 
   return (
     <>

@@ -1,51 +1,55 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const apiurl = {
   // Auth
-  register: 'auth/register',
-  login: 'auth/login',
-  logout: 'auth/logout',
-  updateProfile: 'auth/profile',
+  register: "auth/register",
+  login: "auth/login",
+  logout: "auth/logout",
+  updateProfile: "auth/profile",
 
   // Properties
-  properties: 'public/properties',
+  properties: "public/properties",
   propertyDetail: (id: number | string) => `public/properties/${id}`,
-  propertyFeatured: 'public/properties/featured',
-  propertyTopRated: 'public/properties/top-rated',
-  propertyCheckAvailability: (id: number | string) => `public/properties/${id}/check-availability`,
+  propertyFeatured: "public/properties/featured",
+  propertyTopRated: "public/properties/top-rated",
+  propertyCheckAvailability: (id: number | string) =>
+    `public/properties/${id}/check-availability`,
 
   // Search
-  searchHotels: 'public/search/hotels',
-  searchAutocomplete: 'public/search/autocomplete',
+  searchHotels: "public/search/hotels",
+  searchAutocomplete: "public/search/autocomplete",
 
   // Blog
-  blogPosts: 'public/blog/posts',
+  blogPosts: "public/blog/posts",
   blogPost: (slug: string) => `public/blog/posts/${slug}`,
 
   // Newsletter
-  newsletterSubscribe: 'public/newsletter/subscribe',
+  newsletterSubscribe: "public/newsletter/subscribe",
 
   // Wishlist
-  wishlist: 'wishlist',
+  wishlist: "wishlist",
   wishlistCheck: (propertyCode: string) => `wishlist/check/${propertyCode}`,
   wishlistRemove: (propertyCode: string) => `wishlist/${propertyCode}`,
 
   // Travel Verticals
-  flightsSearch: 'flights/search',
-  flightsBook: 'flights/book',
-  carsSearch: 'cars/search',
-  carsBook: 'cars/book',
-  experiencesSearch: 'experiences/search',
-  experiencesBook: 'experiences/book',
-  transfersSearch: 'transfers/search',
-  transfersBook: 'transfers/book',
+  flightsSearch: "flights/search",
+  flightsBook: "flights/book",
+  carsSearch: "cars/search",
+  carsBook: "cars/book",
+  experiencesSearch: "experiences/search",
+  experiencesBook: "experiences/book",
+  transfersSearch: "transfers/search",
+  transfersBook: "transfers/book",
 
   // AI Trip Planner & Smart Cart
-  tripPlannerGenerate: 'trip-planner/generate',
-  tripPlannerItineraries: 'trip-planner/itineraries',
-  tripPlannerItineraryDetail: (id: number | string) => `trip-planner/itineraries/${id}`,
-  tripPlannerAddItem: (id: number | string) => `trip-planner/itineraries/${id}/add-item`,
-  tripPlannerCheckout: (id: number | string) => `trip-planner/itineraries/${id}/checkout`,
+  tripPlannerGenerate: "trip-planner/generate",
+  tripPlannerItineraries: "trip-planner/itineraries",
+  tripPlannerItineraryDetail: (id: number | string) =>
+    `trip-planner/itineraries/${id}`,
+  tripPlannerAddItem: (id: number | string) =>
+    `trip-planner/itineraries/${id}/add-item`,
+  tripPlannerCheckout: (id: number | string) =>
+    `trip-planner/itineraries/${id}/checkout`,
 };
 
 const BLOG_BASE = process.env.NEXT_PUBLIC_API_BASE!;
@@ -53,7 +57,9 @@ const BLOG_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 export const blogApi = {
   async getPosts(perPage = 12) {
     try {
-      const res = await axios.get(`${BLOG_BASE}/public/blog/posts?per_page=${perPage}`);
+      const res = await axios.get(
+        `${BLOG_BASE}/public/blog/posts?per_page=${perPage}`,
+      );
       return res.data?.data?.data ?? [];
     } catch {
       return [];
@@ -71,7 +77,9 @@ export const blogApi = {
 
   async getAllSlugs(): Promise<string[]> {
     try {
-      const res = await axios.get(`${BLOG_BASE}/public/blog/posts?per_page=100`);
+      const res = await axios.get(
+        `${BLOG_BASE}/public/blog/posts?per_page=100`,
+      );
       return (res.data?.data?.data ?? []).map((p: { slug: string }) => p.slug);
     } catch {
       return [];

@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
-import { Button } from "@/components/ui/button";
 import { ChevronDown, LogOut, Moon, Settings, UserCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import makeApiRequest from "@/network-request/axios";
+import React from "react";
+import { Button } from "@/components/ui/button";
 import { apiurl } from "@/network-request/apis";
+import makeApiRequest from "@/network-request/axios";
 import { notify } from "@/utils";
 
 interface AuthButtonsProps {
@@ -13,10 +13,13 @@ interface AuthButtonsProps {
   onSignupClick: () => void;
 }
 
-export default function AuthButtons({ onLoginClick, onSignupClick }: AuthButtonsProps) {
+export default function AuthButtons({
+  onLoginClick,
+  onSignupClick,
+}: AuthButtonsProps) {
   // localStorage synchronously read on first client render — no useEffect, no flash
-  const [token, setToken] = React.useState<string | null>(
-    () => localStorage.getItem("token")
+  const [token, setToken] = React.useState<string | null>(() =>
+    localStorage.getItem("token"),
   );
   const [user, setUser] = React.useState<any>(() => {
     const saved = localStorage.getItem("user");
@@ -29,7 +32,10 @@ export default function AuthButtons({ onLoginClick, onSignupClick }: AuthButtons
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -41,8 +47,8 @@ export default function AuthButtons({ onLoginClick, onSignupClick }: AuthButtons
     setLoggingOut(true);
     try {
       await makeApiRequest(apiurl.logout, { method: "POST" });
-    } catch (_) {}
-    finally {
+    } catch (_) {
+    } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setToken(null);
@@ -108,13 +114,18 @@ export default function AuthButtons({ onLoginClick, onSignupClick }: AuthButtons
             </div>
             <div className="flex items-center gap-1 mt-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-              <span className="text-xs text-emerald-600 font-medium">Online</span>
+              <span className="text-xs text-emerald-600 font-medium">
+                Online
+              </span>
             </div>
           </div>
 
           <div className="py-1">
             <button
-              onClick={() => { setDropdownOpen(false); router.push("/dashboard"); }}
+              onClick={() => {
+                setDropdownOpen(false);
+                router.push("/dashboard");
+              }}
               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
             >
               <UserCircle2 className="w-4 h-4 text-gray-500" />
@@ -124,13 +135,18 @@ export default function AuthButtons({ onLoginClick, onSignupClick }: AuthButtons
               </div>
             </button>
             <button
-              onClick={() => { setDropdownOpen(false); router.push("/dashboard?tab=settings"); }}
+              onClick={() => {
+                setDropdownOpen(false);
+                router.push("/dashboard?tab=settings");
+              }}
               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
             >
               <Settings className="w-4 h-4 text-gray-500" />
               <div>
                 <p className="text-sm font-medium text-gray-800">Settings</p>
-                <p className="text-xs text-gray-400">Preferences &amp; security</p>
+                <p className="text-xs text-gray-400">
+                  Preferences &amp; security
+                </p>
               </div>
             </button>
             <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left">
@@ -155,7 +171,9 @@ export default function AuthButtons({ onLoginClick, onSignupClick }: AuthButtons
               )}
               <div>
                 <p className="text-sm font-medium text-red-500">
-                  {loggingOut ? `Logging out ${user?.first_name ?? ""}...` : `Log Out ${user?.first_name ?? ""}`}
+                  {loggingOut
+                    ? `Logging out ${user?.first_name ?? ""}...`
+                    : `Log Out ${user?.first_name ?? ""}`}
                 </p>
                 <p className="text-xs text-red-400">End your session</p>
               </div>

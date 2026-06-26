@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Calendar, Clock, Tag, Search, ArrowRight, BookOpen } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpen,
+  Calendar,
+  Clock,
+  Search,
+  Tag,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 interface BlogPost {
   id: number;
@@ -17,7 +24,12 @@ interface BlogPost {
   is_featured: boolean;
   view_count: number;
   category: { id: number; name: string; slug: string; color: string };
-  author: { id: number; first_name: string; last_name: string; profile_image: string | null };
+  author: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_image: string | null;
+  };
 }
 
 interface BlogListProps {
@@ -26,10 +38,10 @@ interface BlogListProps {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
@@ -43,9 +55,12 @@ function isValidUrl(url: string | null | undefined): boolean {
   }
 }
 
-export default function BlogList({ initialPosts, featuredPost }: BlogListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+export default function BlogList({
+  initialPosts,
+  featuredPost,
+}: BlogListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -69,10 +84,12 @@ export default function BlogList({ initialPosts, featuredPost }: BlogListProps) 
       const matchesSearch =
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        post.tags.some((t) =>
+          t.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
       const matchesCategory =
-        selectedCategory === 'all' || post.category.slug === selectedCategory;
+        selectedCategory === "all" || post.category.slug === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -85,11 +102,11 @@ export default function BlogList({ initialPosts, featuredPost }: BlogListProps) 
         {/* Category Pills */}
         <div className="flex flex-wrap gap-2 w-full md:w-auto justify-start">
           <button
-            onClick={() => setSelectedCategory('all')}
+            onClick={() => setSelectedCategory("all")}
             className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer ${
-              selectedCategory === 'all'
-                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
-                : 'bg-slate-50 hover:bg-slate-100 text-slate-600'
+              selectedCategory === "all"
+                ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
+                : "bg-slate-50 hover:bg-slate-100 text-slate-600"
             }`}
           >
             All Articles
@@ -101,12 +118,16 @@ export default function BlogList({ initialPosts, featuredPost }: BlogListProps) 
                 key={cat.slug}
                 onClick={() => setSelectedCategory(cat.slug)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer ${
-                  !isSelected ? 'bg-slate-50 hover:bg-slate-100 text-slate-600' : ''
+                  !isSelected
+                    ? "bg-slate-50 hover:bg-slate-100 text-slate-600"
+                    : ""
                 }`}
                 style={{
                   backgroundColor: isSelected ? cat.color : undefined,
-                  color: isSelected ? '#fff' : undefined,
-                  boxShadow: isSelected ? `0 4px 12px ${cat.color}33` : undefined,
+                  color: isSelected ? "#fff" : undefined,
+                  boxShadow: isSelected
+                    ? `0 4px 12px ${cat.color}33`
+                    : undefined,
                 }}
               >
                 {cat.name}
@@ -129,97 +150,104 @@ export default function BlogList({ initialPosts, featuredPost }: BlogListProps) 
       </div>
 
       {/* Featured Post (only show if no filter/search is active, or if it matches) */}
-      {featuredPost && selectedCategory === 'all' && searchQuery === '' && isValidUrl(featuredPost.featured_image) && (
-        <div className="mb-14 group">
-          <Link href={`/blog/${featuredPost.slug}`}>
-            <article className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 grid md:grid-cols-2 gap-0">
-              {/* Image side */}
-              <div className="relative h-64 md:h-[450px] w-full overflow-hidden">
-                <Image
-                  src={featuredPost.featured_image}
-                  alt={featuredPost.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <div className="absolute top-6 left-6 flex flex-wrap gap-2">
-                  <span
-                    className="text-xs font-semibold px-3 py-1.5 rounded-full text-white shadow-md"
-                    style={{ backgroundColor: featuredPost.category.color }}
-                  >
-                    {featuredPost.category.name}
-                  </span>
-                  <span className="bg-amber-400 text-amber-950 text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
-                    Featured
-                  </span>
-                </div>
-              </div>
-
-              {/* Content side */}
-              <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-                <div className="flex items-center gap-4 text-xs text-slate-400 mb-6 font-medium">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    {formatDate(featuredPost.published_at)}
-                  </span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    {featuredPost.read_time} min read
-                  </span>
+      {featuredPost &&
+        selectedCategory === "all" &&
+        searchQuery === "" &&
+        isValidUrl(featuredPost.featured_image) && (
+          <div className="mb-14 group">
+            <Link href={`/blog/${featuredPost.slug}`}>
+              <article className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 grid md:grid-cols-2 gap-0">
+                {/* Image side */}
+                <div className="relative h-64 md:h-[450px] w-full overflow-hidden">
+                  <Image
+                    src={featuredPost.featured_image}
+                    alt={featuredPost.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute top-6 left-6 flex flex-wrap gap-2">
+                    <span
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full text-white shadow-md"
+                      style={{ backgroundColor: featuredPost.category.color }}
+                    >
+                      {featuredPost.category.name}
+                    </span>
+                    <span className="bg-amber-400 text-amber-950 text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                      Featured
+                    </span>
+                  </div>
                 </div>
 
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-4 leading-tight group-hover:text-emerald-600 transition-colors duration-300">
-                  {featuredPost.title}
-                </h2>
-
-                <p className="text-slate-500 text-sm md:text-base leading-relaxed mb-6 line-clamp-3">
-                  {featuredPost.excerpt}
-                </p>
-
-                {/* Author and Read link */}
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
-                  <div className="flex items-center gap-3">
-                    {featuredPost.author.profile_image && isValidUrl(featuredPost.author.profile_image) ? (
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-slate-100">
-                        <Image
-                          src={featuredPost.author.profile_image}
-                          alt={`${featuredPost.author.first_name} ${featuredPost.author.last_name}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 text-xs font-bold border border-emerald-200">
-                        {featuredPost.author.first_name[0]}
-                        {featuredPost.author.last_name[0]}
-                      </div>
-                    )}
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-800">
-                        {featuredPost.author.first_name} {featuredPost.author.last_name}
-                      </h4>
-                      <p className="text-[11px] text-slate-400">Author</p>
-                    </div>
+                {/* Content side */}
+                <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+                  <div className="flex items-center gap-4 text-xs text-slate-400 mb-6 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                      {formatDate(featuredPost.published_at)}
+                    </span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      {featuredPost.read_time} min read
+                    </span>
                   </div>
 
-                  <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
-                    Read Post
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-4 leading-tight group-hover:text-emerald-600 transition-colors duration-300">
+                    {featuredPost.title}
+                  </h2>
+
+                  <p className="text-slate-500 text-sm md:text-base leading-relaxed mb-6 line-clamp-3">
+                    {featuredPost.excerpt}
+                  </p>
+
+                  {/* Author and Read link */}
+                  <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
+                    <div className="flex items-center gap-3">
+                      {featuredPost.author.profile_image &&
+                      isValidUrl(featuredPost.author.profile_image) ? (
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-slate-100">
+                          <Image
+                            src={featuredPost.author.profile_image}
+                            alt={`${featuredPost.author.first_name} ${featuredPost.author.last_name}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 text-xs font-bold border border-emerald-200">
+                          {featuredPost.author.first_name[0]}
+                          {featuredPost.author.last_name[0]}
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-800">
+                          {featuredPost.author.first_name}{" "}
+                          {featuredPost.author.last_name}
+                        </h4>
+                        <p className="text-[11px] text-slate-400">Author</p>
+                      </div>
+                    </div>
+
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+                      Read Post
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </article>
-          </Link>
-        </div>
-      )}
+              </article>
+            </Link>
+          </div>
+        )}
 
       {/* Grid of posts */}
       {filteredPosts.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-[2rem] border border-slate-100">
           <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-800 mb-1">No articles found</h3>
+          <h3 className="text-lg font-bold text-slate-800 mb-1">
+            No articles found
+          </h3>
           <p className="text-sm text-slate-500 max-w-xs mx-auto">
             Try adjusting your search keywords or category filters.
           </p>
@@ -228,9 +256,21 @@ export default function BlogList({ initialPosts, featuredPost }: BlogListProps) 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts
             // If featured post is visible in general list, let's filter it out when featuredPost section is active
-            .filter((p) => !(featuredPost && selectedCategory === 'all' && searchQuery === '' && p.id === featuredPost.id))
+            .filter(
+              (p) =>
+                !(
+                  featuredPost &&
+                  selectedCategory === "all" &&
+                  searchQuery === "" &&
+                  p.id === featuredPost.id
+                ),
+            )
             .map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group block h-full"
+              >
                 <article className="bg-white rounded-3xl overflow-hidden border border-slate-100/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
                   {/* Card Image */}
                   {isValidUrl(post.featured_image) && (
@@ -292,7 +332,8 @@ export default function BlogList({ initialPosts, featuredPost }: BlogListProps) 
                     {/* Author Row */}
                     <div className="flex items-center justify-between pt-4 border-t border-slate-50 mt-auto">
                       <div className="flex items-center gap-2.5">
-                        {post.author.profile_image && isValidUrl(post.author.profile_image) ? (
+                        {post.author.profile_image &&
+                        isValidUrl(post.author.profile_image) ? (
                           <div className="relative w-8 h-8 rounded-full overflow-hidden border border-slate-100">
                             <Image
                               src={post.author.profile_image}

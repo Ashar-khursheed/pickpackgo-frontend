@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
 import { Star } from "lucide-react";
+import type React from "react";
 import WishlistButton from "@/components/wishlist-button";
 
 interface VacationCardProps {
@@ -33,7 +33,7 @@ const VacationCard: React.FC<VacationCardProps> = ({
   freeCancellation,
   propertyCode,
   propertyType,
-  currency = 'USD',
+  currency = "USD",
   seoSlug,
 }) => {
   return (

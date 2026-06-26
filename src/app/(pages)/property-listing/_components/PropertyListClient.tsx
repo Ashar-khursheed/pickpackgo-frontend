@@ -1,19 +1,26 @@
-'use client';
+"use client";
 
-import { Badge } from '@/components/ui/badge';
+import {
+  Bath,
+  BedDouble,
+  LayoutGrid,
+  LayoutList,
+  MapPin,
+  Star,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import WishlistButton from '@/components/wishlist-button';
-import { cn } from '@/lib/utils';
-import { Bath, BedDouble, LayoutGrid, LayoutList, MapPin, Star } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+} from "@/components/ui/select";
+import WishlistButton from "@/components/wishlist-button";
+import { cn } from "@/lib/utils";
 
 interface Property {
   id: number;
@@ -39,7 +46,11 @@ interface Property {
   bathrooms?: number;
   max_guests?: number;
   seo_slug?: string;
-  api_data?: { bedrooms?: number; bathrooms?: number; max_occupancy?: number } | null;
+  api_data?: {
+    bedrooms?: number;
+    bathrooms?: number;
+    max_occupancy?: number;
+  } | null;
 }
 
 interface Props {
@@ -52,38 +63,56 @@ function formatAmenity(a: string): string {
   return a
     .replace(
       /^(AMENITIES_|KITCHEN_DINING_|OUTDOOR_|ENTERTAINMENT_|POOL_SPA_|THEMES_|SUITABILITY_ACCESSIBILITY_|SUITABILITY_|ACCOMMODATIONS_OTHER_SERVICES_|ACCOMMODATIONS_)/,
-      ''
+      "",
     )
-    .replace(/_/g, ' ')
+    .replace(/_/g, " ")
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function getDisplayName(p: Property): string {
-  if (!p.name.includes(' ') && /^[a-z0-9]+$/i.test(p.name) && p.name.length < 20) {
-    const type = p.property_type.charAt(0).toUpperCase() + p.property_type.slice(1);
+  if (
+    !p.name.includes(" ") &&
+    /^[a-z0-9]+$/i.test(p.name) &&
+    p.name.length < 20
+  ) {
+    const type =
+      p.property_type.charAt(0).toUpperCase() + p.property_type.slice(1);
     return `${type} in ${p.city}`;
   }
   return p.name;
 }
 
-function getRatingInfo(raw: string | null): { score: string; label: string; color: string } | null {
+function getRatingInfo(
+  raw: string | null,
+): { score: string; label: string; color: string } | null {
   if (!raw) return null;
   const r = parseFloat(raw) * 2;
-  if (r >= 9.5) return { score: r.toFixed(1), label: 'Exceptional', color: 'bg-emerald-600' };
-  if (r >= 9.0) return { score: r.toFixed(1), label: 'Superb', color: 'bg-emerald-500' };
-  if (r >= 8.5) return { score: r.toFixed(1), label: 'Fabulous', color: 'bg-[#0d1637]' };
-  if (r >= 8.0) return { score: r.toFixed(1), label: 'Very Good', color: 'bg-[#0d1637]' };
-  if (r >= 7.0) return { score: r.toFixed(1), label: 'Good', color: 'bg-[#0d1637]' };
-  return { score: r.toFixed(1), label: 'Reviewed', color: 'bg-gray-500' };
+  if (r >= 9.5)
+    return {
+      score: r.toFixed(1),
+      label: "Exceptional",
+      color: "bg-emerald-600",
+    };
+  if (r >= 9.0)
+    return { score: r.toFixed(1), label: "Superb", color: "bg-emerald-500" };
+  if (r >= 8.5)
+    return { score: r.toFixed(1), label: "Fabulous", color: "bg-[#0d1637]" };
+  if (r >= 8.0)
+    return { score: r.toFixed(1), label: "Very Good", color: "bg-[#0d1637]" };
+  if (r >= 7.0)
+    return { score: r.toFixed(1), label: "Good", color: "bg-[#0d1637]" };
+  return { score: r.toFixed(1), label: "Reviewed", color: "bg-gray-500" };
 }
 
-function PriceBlock({ p, size = 'lg' }: { p: Property; size?: 'lg' | 'sm' }) {
-  const big = size === 'lg' ? 'text-2xl' : 'text-xl';
+function PriceBlock({ p, size = "lg" }: { p: Property; size?: "lg" | "sm" }) {
+  const big = size === "lg" ? "text-2xl" : "text-xl";
   if (p.display_price > 0) {
     return (
       <div className="text-right">
-        <div className={cn(big, 'font-bold text-gray-900')}>${p.display_price.toLocaleString()}</div>
+        <div className={cn(big, "font-bold text-gray-900")}>
+          ${p.display_price.toLocaleString()}
+        </div>
         <div className="text-xs text-gray-500">{p.price_currency} / night</div>
       </div>
     );
@@ -92,29 +121,34 @@ function PriceBlock({ p, size = 'lg' }: { p: Property; size?: 'lg' | 'sm' }) {
     return (
       <div className="text-right">
         <div className="text-xs text-gray-400">from</div>
-        <div className={cn(big, 'font-bold text-gray-900')}>
+        <div className={cn(big, "font-bold text-gray-900")}>
           ${parseFloat(p.price_from).toLocaleString()}
         </div>
         <div className="text-xs text-gray-500">per night</div>
       </div>
     );
   }
-  return <div className="text-xs text-gray-400 italic">Contact for pricing</div>;
+  return (
+    <div className="text-xs text-gray-400 italic">Contact for pricing</div>
+  );
 }
 
 // ── List Card ──────────────────────────────────────────────────────────────
 
 function ListCard({ p }: { p: Property }) {
   const name = getDisplayName(p);
-  const location = [p.city, p.state, p.country]?.filter(Boolean)?.join(', ');
+  const location = [p.city, p.state, p.country]?.filter(Boolean)?.join(", ");
   const ratingInfo = getRatingInfo(p.rating_average);
   const amenities = (p?.amenities ?? [])
-    .filter((a) => !a.startsWith('SUITABILITY'))
+    .filter((a) => !a.startsWith("SUITABILITY"))
     .slice(0, 4)
     .map(formatAmenity);
 
   return (
-    <Link href={`/property-listing/${p.seo_slug ?? p.id}`} className="block group cursor-pointer">
+    <Link
+      href={`/property-listing/${p.seo_slug ?? p.id}`}
+      className="block group cursor-pointer"
+    >
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-emerald-300 transition-all duration-200">
         <div className="flex min-h-[160px]">
           {/* Image */}
@@ -123,7 +157,7 @@ function ListCard({ p }: { p: Property }) {
               src={
                 p.featured_image ||
                 p.images?.[0] ||
-                'https://picsum.photos/seed/placeholder/400/300'
+                "https://picsum.photos/seed/placeholder/400/300"
               }
               alt={name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -136,7 +170,10 @@ function ListCard({ p }: { p: Property }) {
               propertyCode={p.seo_slug ?? String(p.id)}
               propertyName={name}
               propertyType={p.property_type}
-              pricePerNight={p.display_price || (p.price_from ? parseFloat(p.price_from) : undefined)}
+              pricePerNight={
+                p.display_price ||
+                (p.price_from ? parseFloat(p.price_from) : undefined)
+              }
               currency={p.price_currency}
               imageUrl={p.featured_image}
               seoSlug={p.seo_slug}
@@ -165,13 +202,13 @@ function ListCard({ p }: { p: Property }) {
                 {p.bedrooms && (
                   <span className="flex items-center gap-1">
                     <BedDouble className="w-3.5 h-3.5" />
-                    {p.bedrooms} bed{p.bedrooms !== 1 ? 's' : ''}
+                    {p.bedrooms} bed{p.bedrooms !== 1 ? "s" : ""}
                   </span>
                 )}
                 {p.bathrooms && (
                   <span className="flex items-center gap-1">
                     <Bath className="w-3.5 h-3.5" />
-                    {p.bathrooms} bath{p.bathrooms !== 1 ? 's' : ''}
+                    {p.bathrooms} bath{p.bathrooms !== 1 ? "s" : ""}
                   </span>
                 )}
               </div>
@@ -196,18 +233,23 @@ function ListCard({ p }: { p: Property }) {
             {ratingInfo ? (
               <div className="flex items-center gap-2">
                 <div className="text-right">
-                  <div className="text-xs font-semibold text-gray-700">{ratingInfo.label}</div>
+                  <div className="text-xs font-semibold text-gray-700">
+                    {ratingInfo.label}
+                  </div>
                   {p.booking_count != null && p.booking_count > 0 && (
-                    <div className="text-xs text-gray-400">{p.booking_count} Total Booking</div>
+                    <div className="text-xs text-gray-400">
+                      {p.booking_count} Total Booking
+                    </div>
                   )}
                 </div>
                 <div
                   className={cn(
-                    'w-10 h-10 bg-[#0d1637] rounded-lg rounded-tr-none text-white flex items-center justify-center font-bold text-sm shrink-0',
-                 
+                    "w-10 h-10 bg-[#0d1637] rounded-lg rounded-tr-none text-white flex items-center justify-center font-bold text-sm shrink-0",
                   )}
                 >
-                {p?.rating_average != null ? Number(p.rating_average).toFixed(1) : ''}
+                  {p?.rating_average != null
+                    ? Number(p.rating_average).toFixed(1)
+                    : ""}
                 </div>
               </div>
             ) : (
@@ -231,18 +273,21 @@ function ListCard({ p }: { p: Property }) {
 
 function GridCard({ p }: { p: Property }) {
   const name = getDisplayName(p);
-  const location = [p.city, p.state, p.country]?.filter(Boolean)?.join(', ');
+  const location = [p.city, p.state, p.country]?.filter(Boolean)?.join(", ");
   const ratingInfo = getRatingInfo(p.rating_average);
 
   return (
-    <Link href={`/property-listing/${p.seo_slug ?? p.id}`} className="block group cursor-pointer h-full">
+    <Link
+      href={`/property-listing/${p.seo_slug ?? p.id}`}
+      className="block group cursor-pointer h-full"
+    >
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-emerald-300 transition-all duration-200 flex flex-col h-full">
         <div className="relative h-48 shrink-0 overflow-hidden">
           <img
             src={
               p.featured_image ||
               p.images?.[0] ||
-              'https://picsum.photos/seed/placeholder/400/300'
+              "https://picsum.photos/seed/placeholder/400/300"
             }
             alt={name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -260,7 +305,10 @@ function GridCard({ p }: { p: Property }) {
             propertyCode={p.seo_slug ?? String(p.id)}
             propertyName={name}
             propertyType={p.property_type}
-            pricePerNight={p.display_price || (p.price_from ? parseFloat(p.price_from) : undefined)}
+            pricePerNight={
+              p.display_price ||
+              (p.price_from ? parseFloat(p.price_from) : undefined)
+            }
             currency={p.price_currency}
             imageUrl={p.featured_image}
             seoSlug={p.seo_slug}
@@ -297,8 +345,8 @@ function GridCard({ p }: { p: Property }) {
             {ratingInfo ? (
               <div
                 className={cn(
-                  'flex items-center gap-1 px-2 py-1 rounded-lg text-white text-xs font-bold shrink-0',
-                  ratingInfo.color
+                  "flex items-center gap-1 px-2 py-1 rounded-lg text-white text-xs font-bold shrink-0",
+                  ratingInfo.color,
                 )}
               >
                 <Star className="w-3 h-3 fill-white" />
@@ -317,33 +365,45 @@ function GridCard({ p }: { p: Property }) {
 
 // ── Main export ────────────────────────────────────────────────────────────
 
-const toolbarTriggerClass = 'h-9 text-sm border-gray-200 hover:border-gray-300 min-w-[130px]';
+const toolbarTriggerClass =
+  "h-9 text-sm border-gray-200 hover:border-gray-300 min-w-[130px]";
 
-export default function PropertyListClient({ properties, total, initialParams }: Props) {
-  console.log('Initial params:', properties);
+export default function PropertyListClient({
+  properties,
+  total,
+  initialParams,
+}: Props) {
+  console.log("Initial params:", properties);
   const router = useRouter();
   const pathname = usePathname();
 
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [sortBy, setSortBy] = useState(initialParams.sort_by ?? '');
-  const [minRating, setMinRating] = useState(initialParams.min_rating ?? '');
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [sortBy, setSortBy] = useState(initialParams.sort_by ?? "");
+  const [minRating, setMinRating] = useState(initialParams.min_rating ?? "");
 
-  const navigate = useCallback((newSort: string, newRating: string) => {
-    const p = new URLSearchParams(initialParams);
-    p.delete('sort_by');
-    p.delete('min_rating');
-    p.delete('page');
-    if (newSort) p.set('sort_by', newSort);
-    if (newRating) p.set('min_rating', newRating);
-    router.push(`${pathname}?${p.toString()}`);
-  }, [initialParams, pathname, router]);
+  const navigate = useCallback(
+    (newSort: string, newRating: string) => {
+      const p = new URLSearchParams(initialParams);
+      p.delete("sort_by");
+      p.delete("min_rating");
+      p.delete("page");
+      if (newSort) p.set("sort_by", newSort);
+      if (newRating) p.set("min_rating", newRating);
+      router.push(`${pathname}?${p.toString()}`);
+    },
+    [initialParams, pathname, router],
+  );
 
   if (properties.length === 0) {
     return (
       <div className="text-center py-20 bg-white rounded-xl border border-gray-100">
         <div className="text-5xl mb-4">🏠</div>
-        <p className="text-gray-700 font-semibold text-lg">No properties found</p>
-        <p className="text-gray-400 text-sm mt-1">Try adjusting or clearing your filters</p>
+        <p className="text-gray-700 font-semibold text-lg">
+          No properties found
+        </p>
+        <p className="text-gray-400 text-sm mt-1">
+          Try adjusting or clearing your filters
+        </p>
         <Link
           href="/property-listing"
           className="mt-4 inline-block text-sm text-emerald-600 hover:text-emerald-700 font-medium"
@@ -359,65 +419,70 @@ export default function PropertyListClient({ properties, total, initialParams }:
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
         <p className="text-sm text-gray-500">
-          Showing{' '}
-          <span className="font-semibold text-[#0d1637]">{properties.length}</span> of{' '}
-          <span className="font-semibold text-[#0d1637]">{total}</span> properties
+          Showing{" "}
+          <span className="font-semibold text-[#0d1637]">
+            {properties.length}
+          </span>{" "}
+          of <span className="font-semibold text-[#0d1637]">{total}</span>{" "}
+          properties
         </p>
 
         <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex gap-3">
-          {/* Min Rating */}
-          <Select
-            value={minRating || '__any'}
-            onValueChange={(v) => {
-              const val = v === '__any' ? '' : v;
-              setMinRating(val);
-              navigate(sortBy, val);
-            }}
-          >
-            <SelectTrigger className={toolbarTriggerClass}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__any">⭐ Any Rating</SelectItem>
-              <SelectItem value="3">3+ Stars</SelectItem>
-              <SelectItem value="3.5">3.5+ Stars</SelectItem>
-              <SelectItem value="4">4+ Stars</SelectItem>
-              <SelectItem value="4.5">4.5+ Stars</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-3">
+            {/* Min Rating */}
+            <Select
+              value={minRating || "__any"}
+              onValueChange={(v) => {
+                const val = v === "__any" ? "" : v;
+                setMinRating(val);
+                navigate(sortBy, val);
+              }}
+            >
+              <SelectTrigger className={toolbarTriggerClass}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__any">⭐ Any Rating</SelectItem>
+                <SelectItem value="3">3+ Stars</SelectItem>
+                <SelectItem value="3.5">3.5+ Stars</SelectItem>
+                <SelectItem value="4">4+ Stars</SelectItem>
+                <SelectItem value="4.5">4.5+ Stars</SelectItem>
+              </SelectContent>
+            </Select>
 
-          {/* Sort By */}
-          <Select
-            value={sortBy || '__default'}
-            onValueChange={(v) => {
-              const val = v === '__default' ? '' : v;
-              setSortBy(val);
-              navigate(val, minRating);
-            }}
-          >
-            <SelectTrigger className={cn(toolbarTriggerClass, 'min-w-[160px]')}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__default">↕ Sort: Default</SelectItem>
-              <SelectItem value="price_asc">Price: Low → High</SelectItem>
-              <SelectItem value="price_desc">Price: High → Low</SelectItem>
-              <SelectItem value="rating_desc">Highest Rated</SelectItem>
-              <SelectItem value="newest">Newest First</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            {/* Sort By */}
+            <Select
+              value={sortBy || "__default"}
+              onValueChange={(v) => {
+                const val = v === "__default" ? "" : v;
+                setSortBy(val);
+                navigate(val, minRating);
+              }}
+            >
+              <SelectTrigger
+                className={cn(toolbarTriggerClass, "min-w-[160px]")}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__default">↕ Sort: Default</SelectItem>
+                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+                <SelectItem value="rating_desc">Highest Rated</SelectItem>
+                <SelectItem value="newest">Newest First</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           {/* Grid / List toggle — desktop only */}
           <div className="hidden md:flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-gray-50">
             <button
               type="button"
-              onClick={() => setViewMode('list')}
+              onClick={() => setViewMode("list")}
               className={cn(
-                'p-1.5 rounded transition-colors',
-                viewMode === 'list'
-                  ? 'bg-[#0d1637] text-white'
-                  : 'text-gray-400 hover:text-[#0d1637]'
+                "p-1.5 rounded transition-colors",
+                viewMode === "list"
+                  ? "bg-[#0d1637] text-white"
+                  : "text-gray-400 hover:text-[#0d1637]",
               )}
               title="List view"
             >
@@ -425,12 +490,12 @@ export default function PropertyListClient({ properties, total, initialParams }:
             </button>
             <button
               type="button"
-              onClick={() => setViewMode('grid')}
+              onClick={() => setViewMode("grid")}
               className={cn(
-                'p-1.5 rounded transition-colors',
-                viewMode === 'grid'
-                  ? 'bg-[#0d1637] text-white'
-                  : 'text-gray-400 hover:text-[#0d1637]'
+                "p-1.5 rounded transition-colors",
+                viewMode === "grid"
+                  ? "bg-[#0d1637] text-white"
+                  : "text-gray-400 hover:text-[#0d1637]",
               )}
               title="Grid view"
             >
@@ -448,7 +513,7 @@ export default function PropertyListClient({ properties, total, initialParams }:
       </div>
 
       <div className="hidden md:block">
-        {viewMode === 'list' ? (
+        {viewMode === "list" ? (
           <div className="space-y-3">
             {properties.map((p) => (
               <ListCard key={p.id} p={p} />

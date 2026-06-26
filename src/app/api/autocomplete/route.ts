@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get("q") ?? "";
@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE}/public/search/autocomplete?q=${encodeURIComponent(q)}&limit=${limit}`
+      `${process.env.NEXT_PUBLIC_API_BASE}/public/search/autocomplete?q=${encodeURIComponent(q)}&limit=${limit}`,
     );
     const json = await res.json();
     return NextResponse.json(json);
@@ -14,4 +14,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, data: [] });
   }
 }
-  

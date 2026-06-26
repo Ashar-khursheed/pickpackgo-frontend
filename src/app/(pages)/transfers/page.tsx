@@ -1,16 +1,24 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Header from '@/layouts/header';
-import SearchBar from '@/components/search-bar';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ShieldCheck, Truck, Users, Briefcase, MapPin, Clock, ArrowRight } from 'lucide-react';
-import makeApiRequest from '@/network-request/axios';
-import { apiurl } from '@/network-request/apis';
-import { notify } from '@/utils';
+import {
+  ArrowRight,
+  Briefcase,
+  Clock,
+  ShieldCheck,
+  Truck,
+  Users,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import type React from "react";
+import { Suspense, useEffect, useState } from "react";
+import SearchBar from "@/components/search-bar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Header from "@/layouts/header";
+import { apiurl } from "@/network-request/apis";
+import makeApiRequest from "@/network-request/axios";
+import { notify } from "@/utils";
 
 interface Transfer {
   id: number;
@@ -28,25 +36,27 @@ function TransfersContent() {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState(false);
   const [bookingTransfer, setBookingTransfer] = useState<Transfer | null>(null);
-  
+
   // Passenger Form
   const [passengerForm, setPassengerForm] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    flight_number: '',
-    pickup_time: '',
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    flight_number: "",
+    pickup_time: "",
   });
   const [bookingPending, setBookingPending] = useState(false);
 
-  const location = searchParams.get('location') ?? '';
-  const checkIn = searchParams.get('checkIn') ?? '';
+  const location = searchParams.get("location") ?? "";
+  const checkIn = searchParams.get("checkIn") ?? "";
 
   const searchTransfers = async () => {
     setLoading(true);
     try {
-      const res = await makeApiRequest(`${apiurl.transfersSearch}?location=${encodeURIComponent(location)}&date=${checkIn}`);
+      const res = await makeApiRequest(
+        `${apiurl.transfersSearch}?location=${encodeURIComponent(location)}&date=${checkIn}`,
+      );
       if (res.success) {
         setTransfers(res.data);
       } else {
@@ -63,25 +73,33 @@ function TransfersContent() {
     if (location) {
       searchTransfers();
     }
-  }, [location, checkIn]);
+  }, [location, searchTransfers]);
 
   const handleBookTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passengerForm.first_name || !passengerForm.last_name || !passengerForm.email || !passengerForm.pickup_time) {
-      notify({ message: 'Please fill all pickup details', type: 'error' });
+    if (
+      !passengerForm.first_name ||
+      !passengerForm.last_name ||
+      !passengerForm.email ||
+      !passengerForm.pickup_time
+    ) {
+      notify({ message: "Please fill all pickup details", type: "error" });
       return;
     }
 
     setBookingPending(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        notify({ message: 'Please login to complete your booking', type: 'error' });
+        notify({
+          message: "Please login to complete your booking",
+          type: "error",
+        });
         return;
       }
 
       const res = await makeApiRequest(apiurl.transfersBook, {
-        method: 'POST',
+        method: "POST",
         data: {
           transfer_id: bookingTransfer?.id,
           passenger_details: passengerForm,
@@ -89,7 +107,10 @@ function TransfersContent() {
       });
 
       if (res.success) {
-        notify({ message: 'Airport transfer booked successfully!', type: 'success' });
+        notify({
+          message: "Airport transfer booked successfully!",
+          type: "success",
+        });
         setBookingTransfer(null);
       }
     } catch {
@@ -102,19 +123,18 @@ function TransfersContent() {
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       <Header />
-      
+
       {/* Search Header */}
       <div className="bg-[#0d1637] py-6">
-        <SearchBar
-          initialLocation={location}
-          initialCheckIn={checkIn}
-        />
+        <SearchBar initialLocation={location} initialCheckIn={checkIn} />
       </div>
 
       <main className="global-container px-4 py-8 max-w-5xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
           <Truck className="w-6 h-6 text-emerald-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Available Airport Transfers</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Available Airport Transfers
+          </h1>
           {location && (
             <span className="text-sm text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
               In {location}
@@ -128,26 +148,38 @@ function TransfersContent() {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100">
                 <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-3" />
-                <p className="text-gray-500 text-sm">Searching for local transfers...</p>
+                <p className="text-gray-500 text-sm">
+                  Searching for local transfers...
+                </p>
               </div>
             ) : transfers.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 p-6">
                 <Truck className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-700 font-semibold mb-1">No transfers found</p>
-                <p className="text-gray-400 text-sm">Try searching for a different destination or check later</p>
+                <p className="text-gray-700 font-semibold mb-1">
+                  No transfers found
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Try searching for a different destination or check later
+                </p>
               </div>
             ) : (
               transfers.map((trans) => (
-                <div 
+                <div
                   key={trans.id}
                   className={`bg-white rounded-2xl border transition-all p-6 ${
-                    bookingTransfer?.id === trans.id ? 'border-emerald-600 ring-2 ring-emerald-50' : 'border-gray-100 hover:shadow-md'
+                    bookingTransfer?.id === trans.id
+                      ? "border-emerald-600 ring-2 ring-emerald-50"
+                      : "border-gray-100 hover:shadow-md"
                   }`}
                 >
                   <div className="flex items-start justify-between border-b border-gray-100 pb-4 mb-4">
                     <div>
-                      <h4 className="font-bold text-lg text-gray-900 capitalize">{trans.vehicle_type}</h4>
-                      <p className="text-xs text-gray-500 font-medium">Provided by: {trans.provider}</p>
+                      <h4 className="font-bold text-lg text-gray-900 capitalize">
+                        {trans.vehicle_type}
+                      </h4>
+                      <p className="text-xs text-gray-500 font-medium">
+                        Provided by: {trans.provider}
+                      </p>
                     </div>
                   </div>
 
@@ -169,12 +201,14 @@ function TransfersContent() {
 
                   <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                     <div>
-                      <span className="text-xs text-gray-400 block">One-way total</span>
+                      <span className="text-xs text-gray-400 block">
+                        One-way total
+                      </span>
                       <span className="text-xl font-bold text-gray-900">
                         ${Number(trans.price).toFixed(2)}
                       </span>
                     </div>
-                    <Button 
+                    <Button
                       onClick={() => setBookingTransfer(trans)}
                       className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6"
                     >
@@ -191,15 +225,25 @@ function TransfersContent() {
             <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-6">
               {bookingTransfer ? (
                 <form onSubmit={handleBookTransfer} className="space-y-4">
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Transfer Pickup Details</h3>
-                  
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">
+                    Transfer Pickup Details
+                  </h3>
+
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2 mb-4 text-xs">
-                    <p className="font-semibold text-gray-800">Selected Transfer:</p>
+                    <p className="font-semibold text-gray-800">
+                      Selected Transfer:
+                    </p>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 capitalize">{bookingTransfer.vehicle_type}</span>
-                      <span className="font-bold text-gray-900">${Number(bookingTransfer.price).toFixed(2)}</span>
+                      <span className="text-gray-500 capitalize">
+                        {bookingTransfer.vehicle_type}
+                      </span>
+                      <span className="font-bold text-gray-900">
+                        ${Number(bookingTransfer.price).toFixed(2)}
+                      </span>
                     </div>
-                    <p className="text-gray-400 uppercase text-[10px] font-semibold">{bookingTransfer.provider}</p>
+                    <p className="text-gray-400 uppercase text-[10px] font-semibold">
+                      {bookingTransfer.provider}
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -208,7 +252,12 @@ function TransfersContent() {
                       id="first_name"
                       placeholder="First Name"
                       value={passengerForm.first_name}
-                      onChange={(e) => setPassengerForm({ ...passengerForm, first_name: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerForm({
+                          ...passengerForm,
+                          first_name: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
@@ -219,7 +268,12 @@ function TransfersContent() {
                       id="last_name"
                       placeholder="Last Name"
                       value={passengerForm.last_name}
-                      onChange={(e) => setPassengerForm({ ...passengerForm, last_name: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerForm({
+                          ...passengerForm,
+                          last_name: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
@@ -231,7 +285,12 @@ function TransfersContent() {
                       type="email"
                       placeholder="name@example.com"
                       value={passengerForm.email}
-                      onChange={(e) => setPassengerForm({ ...passengerForm, email: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerForm({
+                          ...passengerForm,
+                          email: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
@@ -242,18 +301,30 @@ function TransfersContent() {
                       id="phone"
                       placeholder="+1 555 000 0000"
                       value={passengerForm.phone}
-                      onChange={(e) => setPassengerForm({ ...passengerForm, phone: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerForm({
+                          ...passengerForm,
+                          phone: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="flight_number">Arrival Flight Number (Optional)</Label>
+                    <Label htmlFor="flight_number">
+                      Arrival Flight Number (Optional)
+                    </Label>
                     <Input
                       id="flight_number"
                       placeholder="EK-203"
                       value={passengerForm.flight_number}
-                      onChange={(e) => setPassengerForm({ ...passengerForm, flight_number: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerForm({
+                          ...passengerForm,
+                          flight_number: e.target.value,
+                        })
+                      }
                     />
                   </div>
 
@@ -263,7 +334,12 @@ function TransfersContent() {
                       id="pickup_time"
                       placeholder="14:30"
                       value={passengerForm.pickup_time}
-                      onChange={(e) => setPassengerForm({ ...passengerForm, pickup_time: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerForm({
+                          ...passengerForm,
+                          pickup_time: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
@@ -273,16 +349,18 @@ function TransfersContent() {
                     <span>Free meet & greet at arrivals hall included.</span>
                   </div>
 
-                  <Button 
+                  <Button
                     type="submit"
                     disabled={bookingPending}
                     className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 cursor-pointer"
                   >
-                    {bookingPending ? 'Processing Booking...' : 'Confirm Transfer Booking'}
+                    {bookingPending
+                      ? "Processing Booking..."
+                      : "Confirm Transfer Booking"}
                   </Button>
-                  
-                  <Button 
-                    variant="ghost" 
+
+                  <Button
+                    variant="ghost"
                     onClick={() => setBookingTransfer(null)}
                     className="w-full text-gray-500 hover:bg-gray-50"
                   >
@@ -294,8 +372,13 @@ function TransfersContent() {
                   <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Truck className="w-6 h-6 text-gray-400" />
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-1">No Transfer Selected</h4>
-                  <p className="text-gray-400 text-sm">Select a transfer vehicle from the list to book custom airport pickup.</p>
+                  <h4 className="font-semibold text-gray-900 mb-1">
+                    No Transfer Selected
+                  </h4>
+                  <p className="text-gray-400 text-sm">
+                    Select a transfer vehicle from the list to book custom
+                    airport pickup.
+                  </p>
                 </div>
               )}
             </div>
@@ -308,11 +391,13 @@ function TransfersContent() {
 
 export default function TransfersPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <TransfersContent />
     </Suspense>
   );

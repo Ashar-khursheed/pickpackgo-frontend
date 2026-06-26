@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import Header from '@/layouts/header';
-import PropertyFiltersClient from './_components/PropertyFiltersClient';
-import PropertyListClient from './_components/PropertyListClient';
-import MobileFilterSheet from './_components/MobileFilterSheet';
+import type { Metadata } from "next";
+import Link from "next/link";
+import Header from "@/layouts/header";
+import MobileFilterSheet from "./_components/MobileFilterSheet";
+import PropertyFiltersClient from "./_components/PropertyFiltersClient";
+import PropertyListClient from "./_components/PropertyListClient";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
 
@@ -42,12 +42,14 @@ interface PageResult {
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-async function fetchProperties(params: Record<string, string>): Promise<PageResult> {
+async function fetchProperties(
+  params: Record<string, string>,
+): Promise<PageResult> {
   const qs = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v) qs.set(k, v);
   }
-  if (!qs.has('per_page')) qs.set('per_page', '20');
+  if (!qs.has("per_page")) qs.set("per_page", "20");
 
   try {
     const res = await fetch(`${API_BASE}/public/properties?${qs.toString()}`, {
@@ -66,39 +68,47 @@ async function fetchProperties(params: Record<string, string>): Promise<PageResu
   }
 }
 
-export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
   const params = await searchParams;
-  const city = typeof params.city === 'string' ? params.city : '';
-  const propType = typeof params.property_type === 'string' ? params.property_type : '';
-  const location = typeof params.location === 'string' ? params.location : '';
+  const city = typeof params.city === "string" ? params.city : "";
+  const propType =
+    typeof params.property_type === "string" ? params.property_type : "";
+  const location = typeof params.location === "string" ? params.location : "";
 
-  const titleParts = ['Properties'];
+  const titleParts = ["Properties"];
   if (city) titleParts.push(`in ${city}`);
   else if (location) titleParts.push(`near ${location}`);
-  if (propType) titleParts.push(`· ${propType.charAt(0).toUpperCase()}${propType.slice(1)}`);
-  const title = titleParts.join(' ');
+  if (propType)
+    titleParts.push(
+      `· ${propType.charAt(0).toUpperCase()}${propType.slice(1)}`,
+    );
+  const title = titleParts.join(" ");
 
   return {
     title: `${title} | PickPackGo`,
-    description: `Browse vacation rentals and ${propType || 'properties'}${city ? ` in ${city}` : ''}. Find and book your perfect stay.`,
+    description: `Browse vacation rentals and ${propType || "properties"}${city ? ` in ${city}` : ""}. Find and book your perfect stay.`,
     openGraph: {
       title: `${title} | PickPackGo`,
-      description: `Browse vacation rentals${city ? ` in ${city}` : ''}. Find and book your perfect stay.`,
-      type: 'website',
+      description: `Browse vacation rentals${city ? ` in ${city}` : ""}. Find and book your perfect stay.`,
+      type: "website",
     },
     alternates: {
       canonical: `/property-listing${
         new URLSearchParams(
           Object.fromEntries(
-            Object.entries(params).filter(([, v]) => typeof v === 'string')
-          ) as Record<string, string>
+            Object.entries(params).filter(([, v]) => typeof v === "string"),
+          ) as Record<string, string>,
         ).toString()
           ? `?${new URLSearchParams(
               Object.fromEntries(
-                Object.entries(params).filter(([, v]) => typeof v === 'string')
-              ) as Record<string, string>
+                Object.entries(params).filter(([, v]) => typeof v === "string"),
+              ) as Record<string, string>,
             ).toString()}`
-          : ''
+          : ""
       }`,
     },
   };
@@ -112,15 +122,23 @@ export default async function PropertyListingPage({
   const rawParams = await searchParams;
 
   const stringParams: Record<string, string> = Object.fromEntries(
-    Object.entries(rawParams).filter(([, v]) => typeof v === 'string')
+    Object.entries(rawParams).filter(([, v]) => typeof v === "string"),
   ) as Record<string, string>;
 
-  const { data: properties, total, current_page, last_page } = await fetchProperties(stringParams);
+  const {
+    data: properties,
+    total,
+    current_page,
+    last_page,
+  } = await fetchProperties(stringParams);
 
-  const heading = stringParams.city || stringParams.location || 'All Properties';
-  const hasFilters = Object.keys(stringParams).some((k) => !['page', 'per_page'].includes(k));
+  const heading =
+    stringParams.city || stringParams.location || "All Properties";
+  const hasFilters = Object.keys(stringParams).some(
+    (k) => !["page", "per_page"].includes(k),
+  );
   const activeFilterCount = Object.keys(stringParams).filter(
-    (k) => !['page', 'per_page'].includes(k)
+    (k) => !["page", "per_page"].includes(k),
   ).length;
 
   return (
@@ -132,7 +150,7 @@ export default async function PropertyListingPage({
         <div className="bg-[#0d1637] rounded-xl px-6 py-5 mb-6">
           <h1 className="text-2xl font-bold text-white mb-1">{heading}</h1>
           <p className="text-sm text-white/60">
-            {total} {total === 1 ? 'property' : 'properties'} found
+            {total} {total === 1 ? "property" : "properties"} found
             {hasFilters && (
               <Link
                 href="/property-listing"
@@ -166,7 +184,11 @@ export default async function PropertyListingPage({
             </div>
 
             {/* Property list / grid */}
-            <PropertyListClient properties={properties} total={total} initialParams={stringParams} />
+            <PropertyListClient
+              properties={properties}
+              total={total}
+              initialParams={stringParams}
+            />
 
             {/* Pagination */}
             {last_page > 1 && (

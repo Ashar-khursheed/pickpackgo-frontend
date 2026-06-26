@@ -1,8 +1,6 @@
-
 // // import { useLocalStorage } from "@/hooks/useLocalStorage";
 // // import { notify } from "@/utils/utils";
 // // import axios from "axios";
-
 
 // // // Create Axios instance
 // // const axiosInstance = axios.create({
@@ -12,7 +10,7 @@
 // //   headers: {
 // //     "Content-Type": "application/json",
 // //   },
-  
+
 // // });
 
 // // // Function to log the user out
@@ -60,15 +58,14 @@
 // //       // ...(data instanceof FormData ? {} : { "Content-Type": "application/json" }),
 // //       headers,
 // //     });
-   
-    
+
 // //     // notify({ message: response.response?.data?.message || response.message, type: "error" });
 // //     return response.data; // Return only the data from the response
 // //   } catch (error: unknown) {
-// //     const errorMessage = axios.isAxiosError(error) 
-// //       ? error.response?.data?.message || error.message 
+// //     const errorMessage = axios.isAxiosError(error)
+// //       ? error.response?.data?.message || error.message
 // //       : 'An unexpected error occurred';
-    
+
 // //     console.error("API Error:", errorMessage);
 // //     notify({ message: errorMessage, type: "error" });
 // //     return Promise.reject(errorMessage);
@@ -98,7 +95,6 @@
 // // //     return Promise.reject(error.response?.data?.message || error.message);
 // // //   }
 // // // };
-
 
 // // export default makeApiRequest;
 
@@ -144,9 +140,9 @@
 // axiosInstance.interceptors.request.use(
 //   (config: InternalAxiosRequestConfig) => {
 //     const token = getAuthToken();
-    
+
 //     console.log("📤 Request to:", config.url);
-    
+
 //     // Agar token hai toh Authorization header add karo
 //     if (token && config.headers) {
 //       config.headers.Authorization = `Bearer ${token}`;
@@ -154,7 +150,7 @@
 //     } else {
 //       console.warn("⚠️ No token available for request");
 //     }
-    
+
 //     return config;
 //   },
 //   (error) => {
@@ -211,7 +207,7 @@
 //       : "An unexpected error occurred";
 
 //     console.error("API Error:", errorMessage);
-    
+
 //     // Don't show notification for 401 (already handled in interceptor)
 //     if (!axios.isAxiosError(error) || error.response?.status !== 401) {
 //       notify({ message: errorMessage, type: "error" });
@@ -249,11 +245,11 @@
 // // axiosInstance.interceptors.request.use(
 // //   (config: InternalAxiosRequestConfig) => {
 // //     const token = getAuthToken();
-    
+
 // //     if (token && config.headers) {
 // //       config.headers.Authorization = `Bearer ${token}`;
 // //     }
-    
+
 // //     return config;
 // //   },
 // //   (error) => {
@@ -331,7 +327,7 @@
 // //       : "An unexpected error occurred";
 
 // //     console.error("API Error:", errorMessage);
-    
+
 // //     // Only show notification if not 401 (already handled in interceptor)
 // //     if (!axios.isAxiosError(error) || error.response?.status !== 401) {
 // //       notify({ message: errorMessage, type: "error" });
@@ -343,20 +339,15 @@
 
 // // export default makeApiRequest;
 
-
-
-
-
-
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { notify } from "@/utils";
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 // Create Axios instance
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE,
   headers: {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
   },
 });
 
@@ -364,16 +355,15 @@ const axiosInstance = axios.create({
 const getAuthToken = (): string | null => {
   try {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       console.warn(" No token found in localStorage");
       return null;
     }
-    
+
     // Remove any extra quotes or whitespace
-    const cleanToken = token.trim().replace(/^["']|["']$/g, '');
- 
-    
+    const cleanToken = token.trim().replace(/^["']|["']$/g, "");
+
     return cleanToken;
   } catch (error) {
     console.error("❌ Error reading token from localStorage:", error);
@@ -388,14 +378,13 @@ export const setAuthToken = (token: string) => {
       console.error("❌ Cannot set empty token");
       return;
     }
-    
+
     // Remove any existing quotes and trim
-    const cleanToken = token.trim().replace(/^["']|["']$/g, '');
+    const cleanToken = token.trim().replace(/^["']|["']$/g, "");
     localStorage.setItem("token", cleanToken);
-   
-    
+
     // Verify it was saved
-    const savedToken = localStorage.getItem("token");
+    const _savedToken = localStorage.getItem("token");
   } catch (error) {
     console.error("❌ Error saving token to localStorage:", error);
   }
@@ -423,49 +412,51 @@ const logOut = () => {
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAuthToken();
-    
+
     if (token) {
       // Ensure headers object exists
       if (!config.headers) {
-        config.headers = {} as InternalAxiosRequestConfig['headers'];
+        config.headers = {} as InternalAxiosRequestConfig["headers"];
       }
-      
+
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-     
       console.log(" Tip: Make sure you're logged in and token is saved");
     }
-    
+
     return config;
   },
   (error) => {
     console.error(" Request interceptor error:", error);
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - Handle token expiration
 axiosInstance.interceptors.response.use(
   (response) => {
-     // Response received
+    // Response received
     return response;
   },
   (error: AxiosError) => {
     console.error(" Response error:", {
       status: error.response?.status,
       url: error.config?.url,
-      message: error.message
+      message: error.message,
     });
-    
+
     // If token expired (401), logout
     if (error.response?.status === 401) {
       console.error(" Unauthorized - Token may be invalid or expired");
-      notify({ message: "Session expired. Please login again.", type: "error" });
+      notify({
+        message: "Session expired. Please login again.",
+        type: "error",
+      });
       logOut();
     }
-    
+
     return Promise.reject(error);
-  }
+  },
 );
 
 // Generic API request function
@@ -477,7 +468,7 @@ interface ApiRequestOptions {
 
 const makeApiRequest = async (url: string, options: ApiRequestOptions = {}) => {
   const { method = "GET", data = null, headers: customHeaders = {} } = options;
- 
+
   // Check if data is FormData
   const isFormData = data instanceof FormData;
 
@@ -493,11 +484,11 @@ const makeApiRequest = async (url: string, options: ApiRequestOptions = {}) => {
       method: method.toLowerCase(),
       headers,
     };
-    
+
     if (data) {
       config.data = data;
     }
-    
+
     const response = await axiosInstance(config);
     return response.data;
   } catch (error: unknown) {
@@ -508,9 +499,9 @@ const makeApiRequest = async (url: string, options: ApiRequestOptions = {}) => {
     console.error(" API Error:", {
       url,
       message: errorMessage,
-      status: axios.isAxiosError(error) ? error.response?.status : 'unknown'
+      status: axios.isAxiosError(error) ? error.response?.status : "unknown",
     });
-    
+
     // Don't show notification for 401 (already handled in interceptor)
     if (!axios.isAxiosError(error) || error.response?.status !== 401) {
       notify({ message: errorMessage, type: "error" });
@@ -521,22 +512,3 @@ const makeApiRequest = async (url: string, options: ApiRequestOptions = {}) => {
 };
 
 export default makeApiRequest;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

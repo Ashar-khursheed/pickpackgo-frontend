@@ -1,74 +1,94 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { SlidersHorizontal, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Loader2, SlidersHorizontal } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 interface Props {
   initialParams: Record<string, string>;
 }
 
 const inputClass =
-  'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white transition-colors hover:border-gray-300';
+  "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white transition-colors hover:border-gray-300";
 
-const triggerClass = 'w-full border-gray-200 text-sm hover:border-gray-300 focus:ring-emerald-500';
+const triggerClass =
+  "w-full border-gray-200 text-sm hover:border-gray-300 focus:ring-emerald-500";
 
 export default function SearchFiltersClient({ initialParams }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [propertyType, setPropertyType] = useState(initialParams.propertyType ?? '');
-  const [minPrice, setMinPrice] = useState(initialParams.minPrice ?? '');
-  const [maxPrice, setMaxPrice] = useState(initialParams.maxPrice ?? '');
-  const [bedrooms, setBedrooms] = useState(initialParams.bedrooms ?? '');
-  const [bathrooms, setBathrooms] = useState(initialParams.bathrooms ?? '');
-  const [sort, setSort] = useState(initialParams.sort ?? '');
+  const [propertyType, setPropertyType] = useState(
+    initialParams.propertyType ?? "",
+  );
+  const [minPrice, setMinPrice] = useState(initialParams.minPrice ?? "");
+  const [maxPrice, setMaxPrice] = useState(initialParams.maxPrice ?? "");
+  const [bedrooms, setBedrooms] = useState(initialParams.bedrooms ?? "");
+  const [bathrooms, setBathrooms] = useState(initialParams.bathrooms ?? "");
+  const [sort, setSort] = useState(initialParams.sort ?? "");
   const [isLoading, setIsLoading] = useState(false);
 
   const applyFilters = useCallback(() => {
     setIsLoading(true);
     const p = new URLSearchParams();
     // Preserve search params
-    if (initialParams.location) p.set('location', initialParams.location);
-    if (initialParams.checkIn) p.set('checkIn', initialParams.checkIn);
-    if (initialParams.checkOut) p.set('checkOut', initialParams.checkOut);
-    if (initialParams.guests) p.set('guests', initialParams.guests);
+    if (initialParams.location) p.set("location", initialParams.location);
+    if (initialParams.checkIn) p.set("checkIn", initialParams.checkIn);
+    if (initialParams.checkOut) p.set("checkOut", initialParams.checkOut);
+    if (initialParams.guests) p.set("guests", initialParams.guests);
     // Apply filters
-    if (propertyType) p.set('propertyType', propertyType);
-    if (minPrice) p.set('minPrice', minPrice);
-    if (maxPrice) p.set('maxPrice', maxPrice);
-    if (bedrooms) p.set('bedrooms', bedrooms);
-    if (bathrooms) p.set('bathrooms', bathrooms);
-    if (sort) p.set('sort', sort);
+    if (propertyType) p.set("propertyType", propertyType);
+    if (minPrice) p.set("minPrice", minPrice);
+    if (maxPrice) p.set("maxPrice", maxPrice);
+    if (bedrooms) p.set("bedrooms", bedrooms);
+    if (bathrooms) p.set("bathrooms", bathrooms);
+    if (sort) p.set("sort", sort);
     router.push(`${pathname}?${p.toString()}`);
-  }, [propertyType, minPrice, maxPrice, bedrooms, bathrooms, sort, initialParams, pathname, router]);
+  }, [
+    propertyType,
+    minPrice,
+    maxPrice,
+    bedrooms,
+    bathrooms,
+    sort,
+    initialParams,
+    pathname,
+    router,
+  ]);
 
   const clearFilters = useCallback(() => {
-    setPropertyType('');
-    setMinPrice('');
-    setMaxPrice('');
-    setBedrooms('');
-    setBathrooms('');
-    setSort('');
+    setPropertyType("");
+    setMinPrice("");
+    setMaxPrice("");
+    setBedrooms("");
+    setBathrooms("");
+    setSort("");
     const p = new URLSearchParams();
-    if (initialParams.location) p.set('location', initialParams.location);
-    if (initialParams.checkIn) p.set('checkIn', initialParams.checkIn);
-    if (initialParams.checkOut) p.set('checkOut', initialParams.checkOut);
-    if (initialParams.guests) p.set('guests', initialParams.guests);
+    if (initialParams.location) p.set("location", initialParams.location);
+    if (initialParams.checkIn) p.set("checkIn", initialParams.checkIn);
+    if (initialParams.checkOut) p.set("checkOut", initialParams.checkOut);
+    if (initialParams.guests) p.set("guests", initialParams.guests);
     router.push(`${pathname}?${p.toString()}`);
   }, [initialParams, pathname, router]);
 
-  const hasActiveFilters = !!(propertyType || minPrice || maxPrice || bedrooms || bathrooms || sort);
+  const hasActiveFilters = !!(
+    propertyType ||
+    minPrice ||
+    maxPrice ||
+    bedrooms ||
+    bathrooms ||
+    sort
+  );
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -101,8 +121,8 @@ export default function SearchFiltersClient({ initialParams }: Props) {
             Sort By
           </label>
           <Select
-            value={sort || '__featured'}
-            onValueChange={(v) => setSort(v === '__featured' ? '' : v)}
+            value={sort || "__featured"}
+            onValueChange={(v) => setSort(v === "__featured" ? "" : v)}
           >
             <SelectTrigger className={triggerClass}>
               <SelectValue />
@@ -125,8 +145,8 @@ export default function SearchFiltersClient({ initialParams }: Props) {
             Property Type
           </label>
           <Select
-            value={propertyType || '__all'}
-            onValueChange={(v) => setPropertyType(v === '__all' ? '' : v)}
+            value={propertyType || "__all"}
+            onValueChange={(v) => setPropertyType(v === "__all" ? "" : v)}
           >
             <SelectTrigger className={triggerClass}>
               <SelectValue />
@@ -150,8 +170,10 @@ export default function SearchFiltersClient({ initialParams }: Props) {
         {/* Price Range */}
         <div>
           <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">
-            Price Range{' '}
-            <span className="text-gray-400 font-normal normal-case">(per night)</span>
+            Price Range{" "}
+            <span className="text-gray-400 font-normal normal-case">
+              (per night)
+            </span>
           </label>
           <div className="flex gap-2">
             <input
@@ -160,7 +182,7 @@ export default function SearchFiltersClient({ initialParams }: Props) {
               onChange={(e) => setMinPrice(e.target.value)}
               placeholder="Min $"
               min={0}
-              className={cn(inputClass, 'flex-1 w-0')}
+              className={cn(inputClass, "flex-1 w-0")}
             />
             <input
               type="number"
@@ -168,7 +190,7 @@ export default function SearchFiltersClient({ initialParams }: Props) {
               onChange={(e) => setMaxPrice(e.target.value)}
               placeholder="Max $"
               min={0}
-              className={cn(inputClass, 'flex-1 w-0')}
+              className={cn(inputClass, "flex-1 w-0")}
             />
           </div>
         </div>
@@ -181,8 +203,8 @@ export default function SearchFiltersClient({ initialParams }: Props) {
             Min Bedrooms
           </label>
           <Select
-            value={bedrooms || '__any'}
-            onValueChange={(v) => setBedrooms(v === '__any' ? '' : v)}
+            value={bedrooms || "__any"}
+            onValueChange={(v) => setBedrooms(v === "__any" ? "" : v)}
           >
             <SelectTrigger className={triggerClass}>
               <SelectValue />
@@ -204,8 +226,8 @@ export default function SearchFiltersClient({ initialParams }: Props) {
             Min Bathrooms
           </label>
           <Select
-            value={bathrooms || '__any'}
-            onValueChange={(v) => setBathrooms(v === '__any' ? '' : v)}
+            value={bathrooms || "__any"}
+            onValueChange={(v) => setBathrooms(v === "__any" ? "" : v)}
           >
             <SelectTrigger className={triggerClass}>
               <SelectValue />
@@ -233,7 +255,7 @@ export default function SearchFiltersClient({ initialParams }: Props) {
                 Loading...
               </>
             ) : (
-              'Apply Filters'
+              "Apply Filters"
             )}
           </Button>
           {hasActiveFilters && (

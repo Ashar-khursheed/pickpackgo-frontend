@@ -1,9 +1,10 @@
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
+
 // import { toast } from "sonner"
 
 interface NotifyOptions {
   message: string;
-  type?: 'success' | 'error';
+  type?: "success" | "error";
 }
 interface Availability {
   [key: string]: string[];
@@ -16,17 +17,13 @@ interface Availability {
 //       .replace(/\s+/g, "-") // Replace spaces with '-'
 //       .replace(/[^\w-]+/g, ""); // Remove all non-word characters
 //   };
-  
+
 //   export const deslugify = (slug: string) => {
 //     return slug
 //       .replace(/-/g, " ") // Replace '-' with spaces
 //       .replace(/\band\b/g, "&") // Replace 'and' with '&'
 //       .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize words
 //   };
-  
-
-
- 
 
 // export const generateSlug = (name: string) => {
 //   return name
@@ -36,10 +33,10 @@ interface Availability {
 //     .replace(/\s+/g, '-'); // Replace spaces with hyphens
 // };
 
-export const notify = ({ message, type = 'success' }: NotifyOptions): void => {
-  if (type === 'success') {
+export const notify = ({ message, type = "success" }: NotifyOptions): void => {
+  if (type === "success") {
     toast.success(message);
-  } else if (type === 'error') {
+  } else if (type === "error") {
     toast.error(message);
   }
 };
@@ -52,24 +49,23 @@ export const notify = ({ message, type = 'success' }: NotifyOptions): void => {
 //   const yyyy = dateNew.getFullYear(); // Year (2025)
 
 //   const formattedDate = `${dd}/${mm}/${yyyy}`;
-//   return formattedDate 
+//   return formattedDate
 // };
 
- export const formatDate = (date: string | null) => {
-    if (!date) return "Never";
-    return new Date(date).toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-  
+export const formatDate = (date: string | null) => {
+  if (!date) return "Never";
+  return new Date(date).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
-  export   const formatAvailability = (availability: Availability) => {
-    return Object.entries(availability).map(([day, times]) => ({
-      day: day.charAt(0).toUpperCase() + day.slice(1),
-      times: times.join(", "),
-    }));
-  };
+export const formatAvailability = (availability: Availability) => {
+  return Object.entries(availability).map(([day, times]) => ({
+    day: day.charAt(0).toUpperCase() + day.slice(1),
+    times: times.join(", "),
+  }));
+};
