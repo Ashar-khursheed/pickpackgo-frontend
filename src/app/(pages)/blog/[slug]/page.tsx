@@ -204,7 +204,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
             <div className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-slate-300">
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1.5 rounded-full">
                 {post.author.profile_image &&
-                isValidUrl(post.author.profile_image) ? (
+                  isValidUrl(post.author.profile_image) ? (
                   <div className="relative w-6 h-6 rounded-full overflow-hidden border border-white/20">
                     <Image
                       src={post.author.profile_image}
@@ -304,7 +304,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
               {/* About Author Card */}
               <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs flex flex-col items-center text-center">
                 {post.author.profile_image &&
-                isValidUrl(post.author.profile_image) ? (
+                  isValidUrl(post.author.profile_image) ? (
                   <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-emerald-100 mb-4">
                     <Image
                       src={post.author.profile_image}
@@ -334,7 +334,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
               {/* ShareButtons Component */}
               <ShareButtons title={post.title} />
 
-              {/* Recommended Articles Sidebar Widget */}
+              {/* Recommended Articles Sidebar Widgets */}
               {recommended.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
                   <h3 className="text-sm font-bold text-slate-800 mb-5 flex items-center gap-2 pb-4 border-b border-slate-50">
