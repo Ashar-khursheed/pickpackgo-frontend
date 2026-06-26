@@ -60,6 +60,26 @@ function TripPlannerContent() {
   const [days, setDays] = useState(3);
   const [budget, setBudget] = useState("moderate");
   const [specialRequests, setSpecialRequests] = useState("");
+  const [interests, setInterests] = useState<string[]>(["sightseeing"]);
+
+  const interestOptions = [
+    { id: "sightseeing", label: "Sightseeing", icon: "🏛️" },
+    { id: "adventure", label: "Adventure", icon: "⛰️" },
+    { id: "food", label: "Food & Dining", icon: "🍽️" },
+    { id: "nature", label: "Nature & Wildlife", icon: "🌿" },
+    { id: "shopping", label: "Shopping", icon: "🛍️" },
+    { id: "relaxation", label: "Relaxation", icon: "🏖️" },
+  ];
+
+  const toggleInterest = (id: string) => {
+    setInterests((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id];
+      // Enforce at least one interest is selected
+      return next.length === 0 ? ["sightseeing"] : next;
+    });
+  };
 
   // Output State
   const [generating, setGenerating] = useState(false);
@@ -95,6 +115,7 @@ function TripPlannerContent() {
           days,
           budget_level: budget,
           special_requests: specialRequests,
+          interests,
         },
       });
 
@@ -246,6 +267,32 @@ function TripPlannerContent() {
                     <option value="moderate">Moderate</option>
                     <option value="luxury">Luxury</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-700 block">
+                  Select Interests <span className="text-red-500">*</span>
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {interestOptions.map((opt) => {
+                    const isSelected = interests.includes(opt.id);
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => toggleInterest(opt.id)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
+                          isSelected
+                            ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                            : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+                        }`}
+                      >
+                        <span>{opt.icon}</span>
+                        <span>{opt.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
